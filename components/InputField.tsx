@@ -24,8 +24,6 @@ export function InputField({
   editable = true,
 }: InputFieldProps) {
   const [focused, setFocused] = useState(false);
-  const hasValue = value != null && value.length > 0;
-  const isActive = focused || hasValue;
 
   return (
     <View style={styles.wrapper}>
@@ -33,11 +31,11 @@ export function InputField({
       <TextInput
         style={[
           styles.input,
-          isActive && styles.inputActive,
+          focused && styles.inputFocused,
           !editable && styles.inputDisabled,
         ]}
         placeholder={placeholder}
-        placeholderTextColor={Colors.textSecondary}
+        placeholderTextColor={Colors.placeholder}
         value={value}
         onChangeText={onChangeText}
         onFocus={() => setFocused(true)}
@@ -54,26 +52,28 @@ export function InputField({
 const styles = StyleSheet.create({
   wrapper: {
     width: '100%',
-    marginBottom: 16,
+    gap: 8,
   },
   label: {
-    color: Colors.textPrimary,
+    fontFamily: 'SpaceGrotesk-Medium',
+    color: '#030303',
     fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
+    lineHeight: 16,
   },
   input: {
     backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.inputBorder,
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 14,
+    fontFamily: 'SpaceGrotesk-Medium',
     fontSize: 16,
-    color: Colors.textPrimary,
+    lineHeight: 24,
+    color: Colors.textFilled,
   },
-  inputActive: {
-    borderColor: Colors.buttonPrimary,
+  inputFocused: {
+    borderColor: Colors.inputBorder,
   },
   inputDisabled: {
     opacity: 0.7,

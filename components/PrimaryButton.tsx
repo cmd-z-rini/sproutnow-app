@@ -6,21 +6,35 @@ type PrimaryButtonProps = {
   title: string;
   onPress: () => void;
   disabled?: boolean;
+  /** When 'questionnaire', disabled state uses purple (#3B35B0 / #625BE8). Otherwise uses gray (#C0C0C0 / #FFFFFF). */
+  disabledVariant?: 'default' | 'questionnaire';
 };
 
-export function PrimaryButton({ title, onPress, disabled }: PrimaryButtonProps) {
+export function PrimaryButton({ title, onPress, disabled, disabledVariant = 'default' }: PrimaryButtonProps) {
+  const isQuestionnaireDisabled = disabled && disabledVariant === 'questionnaire';
+  const isDefaultDisabled = disabled && disabledVariant !== 'questionnaire';
+
   return (
     <View style={styles.wrapper}>
       <Pressable
         style={({ pressed }) => [
           styles.button,
           pressed && styles.pressed,
-          disabled && styles.disabled,
+          isQuestionnaireDisabled && styles.disabledQuestionnaire,
+          isDefaultDisabled && styles.disabledDefault,
         ]}
         onPress={onPress}
         disabled={disabled}
       >
-        <Text style={styles.text}>{title}</Text>
+        <Text
+          style={[
+            styles.text,
+            isQuestionnaireDisabled && styles.textDisabledQuestionnaire,
+            isDefaultDisabled && styles.textDisabledDefault,
+          ]}
+        >
+          {title}
+        </Text>
       </Pressable>
     </View>
   );
@@ -32,9 +46,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.buttonPrimary,
-    borderRadius: 9999,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    height: 70,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -42,12 +55,21 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.85,
   },
-  disabled: {
-    opacity: 0.5,
+  disabledQuestionnaire: {
+    backgroundColor: '#3B35B0',
+  },
+  disabledDefault: {
+    backgroundColor: '#C0C0C0',
   },
   text: {
     color: Colors.textOnPrimary,
-    fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'SpaceGrotesk-Medium',
+    fontSize: 20,
+  },
+  textDisabledQuestionnaire: {
+    color: '#625BE8',
+  },
+  textDisabledDefault: {
+    color: '#FFFFFF',
   },
 });

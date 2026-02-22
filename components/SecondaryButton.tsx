@@ -31,12 +31,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
+    backgroundColor: Colors.buttonSecondary,
+    borderWidth: 1,
     borderColor: Colors.border,
-    borderRadius: 9999,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    height: 70,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -48,8 +47,8 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   text: {
-    color: Colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '600',
+    color: Colors.textSecondary,
+    fontFamily: 'SpaceGrotesk-Medium',
+    fontSize: 20,
   },
 });
