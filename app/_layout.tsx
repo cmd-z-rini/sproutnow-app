@@ -30,6 +30,11 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="splash-2" />
       <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(questionnaire)" />
+      <Stack.Screen name="loading" />
+      <Stack.Screen name="home" />
+      <Stack.Screen name="(explore)" />
+      <Stack.Screen name="(sprout-ai)" />
       <Stack.Screen name="welcome" />
     </Stack>
   );

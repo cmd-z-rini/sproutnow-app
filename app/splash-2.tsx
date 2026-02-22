@@ -1,21 +1,30 @@
 import { PrimaryButton } from '../components/PrimaryButton';
 import { Colors } from '../constants/Colors';
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import Illustration from '../assets/images/ic_illus2.svg';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const ILLUS_ASPECT = 428 / 640;
 
 export default function Splash2Screen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Grow your plants{'\n'}with confidence</Text>
-        <Text style={styles.subtitle}>
-          Get personalised care reminders and expert tips so your plants thrive.
-        </Text>
+      <View style={styles.heroSection}>
+        <Illustration
+          width={SCREEN_WIDTH}
+          height={SCREEN_WIDTH / ILLUS_ASPECT}
+        />
       </View>
 
-      <View style={styles.footer}>
+      <View style={styles.bottomArea}>
+        <View style={styles.indicators}>
+          <View style={[styles.dot, styles.dotInactive]} />
+          <View style={[styles.dot, styles.dotActive]} />
+        </View>
+
         <PrimaryButton title="Lets go" onPress={() => router.push('/signup')} />
       </View>
     </View>
@@ -26,30 +35,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    paddingHorizontal: 24,
-    paddingTop: 80,
-    paddingBottom: 40,
-    justifyContent: 'space-between',
   },
-  content: {
+  heroSection: {
     flex: 1,
     justifyContent: 'center',
-    paddingRight: 24,
+    alignItems: 'center',
   },
-  title: {
-    fontFamily: 'SpaceGrotesk-Bold',
-    fontSize: 28,
-    lineHeight: 36,
-    color: Colors.textPrimary,
-    marginBottom: 16,
+  bottomArea: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    gap: 24,
   },
-  subtitle: {
-    fontFamily: 'SpaceGrotesk-Regular',
-    fontSize: 16,
-    lineHeight: 24,
-    color: Colors.textSecondary,
+  indicators: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
   },
-  footer: {
-    paddingBottom: 20,
+  dot: {
+    height: 8,
+    width: 37,
+    borderRadius: 16,
+  },
+  dotInactive: {
+    backgroundColor: '#B3E3C8',
+  },
+  dotActive: {
+    backgroundColor: '#417B5B',
   },
 });

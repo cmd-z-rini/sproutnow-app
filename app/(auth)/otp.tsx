@@ -89,7 +89,7 @@ export default function OtpScreen() {
       <View style={styles.footer}>
         <PrimaryButton
           title="Continue"
-          onPress={() => router.replace('/welcome')}
+          onPress={() => router.push('/q1')}
           disabled={!allFilled}
         />
       </View>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   otpInputFilled: {
-    borderColor: Colors.buttonPrimary,
+    borderColor: Colors.border,
   },
   resend: {
     alignSelf: 'flex-start',
