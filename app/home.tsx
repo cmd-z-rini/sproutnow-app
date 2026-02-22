@@ -1,10 +1,5 @@
-import { AlertItem } from '../components/AlertItem';
-import { BottomNav } from '../components/BottomNav';
-import { PlantCard } from '../components/PlantCard';
-import { PromoBanner } from '../components/PromoBanner';
-import { Colors } from '../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -12,15 +7,21 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import GoodMorningSun from '../assets/images/goodmorning_sun.svg';
-import IcScan from '../assets/images/ic_scan.svg';
-import WeatherIcon from '../assets/images/weather.svg';
+} from "react-native";
+import GoodMorningSun from "../assets/images/goodmorning_sun.svg";
+import IcScan from "../assets/images/ic_scan.svg";
+import WeatherIcon from "../assets/images/weather.svg";
+import { AlertItem } from "../components/AlertItem";
+import { BottomNav } from "../components/BottomNav";
+import { PlantCard } from "../components/PlantCard";
+import { PromoBanner } from "../components/PromoBanner";
+import { Colors } from "../constants/Colors";
 
-const TABS = ['Todo', 'Care info', 'History'] as const;
+const TABS = ["Todo", "Care info", "History"] as const;
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>('Care info');
+  const [activeTab, setActiveTab] =
+    useState<(typeof TABS)[number]>("Care info");
 
   return (
     <View style={styles.container}>
@@ -41,7 +42,12 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.searchRow}>
-          <Ionicons name="search" size={20} color={Colors.placeholder} style={styles.searchIcon} />
+          <Ionicons
+            name="search"
+            size={20}
+            color={Colors.placeholder}
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Search Plant"
@@ -78,7 +84,12 @@ export default function HomeScreen() {
               style={[styles.tab, activeTab === tab && styles.tabActive]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === tab && styles.tabTextActive,
+                ]}
+              >
                 {tab}
               </Text>
             </Pressable>
@@ -124,36 +135,36 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
   },
   headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   sunIcon: {
     marginRight: 8,
   },
   greeting: {
-    fontFamily: 'SpaceGrotesk-Bold',
+    fontFamily: "SpaceGrotesk-Bold",
     fontSize: 22,
     color: Colors.textPrimary,
   },
   weatherRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   temp: {
-    fontFamily: 'SpaceGrotesk-Medium',
+    fontFamily: "SpaceGrotesk-Medium",
     fontSize: 16,
     color: Colors.textPrimary,
   },
   searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: Colors.surface,
     borderWidth: 1,
     borderColor: Colors.inputBorder,
@@ -167,7 +178,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontFamily: 'SpaceGrotesk-Regular',
+    fontFamily: "SpaceGrotesk-Regular",
     fontSize: 16,
     color: Colors.textPrimary,
     paddingVertical: 12,
@@ -179,18 +190,18 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   sectionTitle: {
-    fontFamily: 'SpaceGrotesk-Bold',
+    fontFamily: "SpaceGrotesk-Bold",
     fontSize: 18,
     color: Colors.textPrimary,
   },
   viewAll: {
-    fontFamily: 'SpaceGrotesk-Medium',
+    fontFamily: "SpaceGrotesk-Medium",
     fontSize: 14,
     color: Colors.green,
   },
@@ -198,7 +209,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   tabRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: Colors.inputBorder,
     borderRadius: 10,
     padding: 4,
@@ -207,14 +218,14 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     paddingVertical: 10,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 8,
   },
   tabActive: {
     backgroundColor: Colors.buttonPrimary,
   },
   tabText: {
-    fontFamily: 'SpaceGrotesk-Medium',
+    fontFamily: "SpaceGrotesk-Medium",
     fontSize: 14,
     color: Colors.textPrimary,
   },
