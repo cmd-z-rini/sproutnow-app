@@ -7,6 +7,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
@@ -26,16 +28,19 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="splash-2" />
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(questionnaire)" />
-      <Stack.Screen name="loading" />
-      <Stack.Screen name="home" />
-      <Stack.Screen name="(explore)" />
-      <Stack.Screen name="(sprout-ai)" />
-      <Stack.Screen name="welcome" />
-    </Stack>
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="splash-2" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(questionnaire)" />
+        <Stack.Screen name="loading" />
+        <Stack.Screen name="home" />
+        <Stack.Screen name="(explore)" />
+        <Stack.Screen name="(sprout-ai)" />
+        <Stack.Screen name="welcome" />
+      </Stack>
+      {Platform.OS === 'web' && <Analytics />}
+    </>
   );
 }
