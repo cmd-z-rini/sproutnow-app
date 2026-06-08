@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0D1A10">
+<title>SproutNow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand:#2E6F40; --brand-700:#1B4A29; --brand-lt:#E8F5E9; --brand-xlt:#F1FAF2;
+  --accent:#FF5B02; --accent-lt:#FFF0E8;
+  --error:#D92D20; --error-lt:#FEF2F0;
+  --success:#388E3C;
+  --g50:#FAFAF8; --g100:#F4F3F0; --g200:#E8E6E1; --g300:#D4D1C9;
+  --g400:#A9A59C; --g600:#6B6760; --g700:#504D47; --g800:#3A3731; --g950:#1A1815;
+  --white:#FFFFFF; --cam:#0D1A10; --page:#F5F3EE;
+  --serif:'DM Serif Display',serif; --body:'DM Sans',sans-serif; --mono:'Fira Mono',monospace;
+  --safe-top:env(safe-area-inset-top,44px);
+  --safe-bottom:env(safe-area-inset-bottom,20px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+body{font-family:var(--body);color:var(--g950);}
+
+/* ── Screen engine ── */
+#app{position:fixed;inset:0;overflow:hidden;}
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transform:translateX(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1),opacity .32s ease;
+  overflow:hidden;
+}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.screen.exit-left{opacity:0;transform:translateX(-28%);}
+
+/* ── Shared layout ── */
+.s-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.s-scroll::-webkit-scrollbar{display:none;}
+.px{padding-left:24px;padding-right:24px;}
+.safe-top{padding-top:calc(var(--safe-top) + 10px);}
+.safe-bot{padding-bottom:calc(var(--safe-bottom) + 8px);}
+
+/* ── Status bar ── */
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:calc(var(--safe-top) + 2px) 24px 0;flex-shrink:0;height:calc(var(--safe-top) + 28px);}
+.status-bar.light .st-time{color:#fff;}
+.status-bar.dark .st-time{color:var(--g950);}
+.st-time{font-size:15px;font-weight:600;letter-spacing:-.02em;}
+.st-icons{display:flex;align-items:center;gap:5px;font-size:11px;}
+
+/* ── Buttons ── */
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:56px;background:var(--g950);color:#fff;border:2px solid #2a2a28;border-radius:100px;font-family:var(--body);font-size:15px;font-weight:600;box-shadow:0 9px 20px rgba(0,0,0,.35);cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:transform .1s,opacity .1s;}
+.btn-primary:active{transform:scale(.97);opacity:.9;}
+.btn-ghost{display:flex;align-items:center;justify-content:center;width:100%;height:56px;background:transparent;color:var(--g600);border:2px solid var(--g300);border-radius:100px;font-family:var(--body);font-size:15px;font-weight:600;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:opacity .1s;}
+.btn-ghost:active{opacity:.7;}
+.btn-brand{display:flex;align-items:center;justify-content:center;width:100%;height:48px;background:var(--brand);color:#fff;border:none;border-radius:100px;font-family:var(--body);font-size:14px;font-weight:600;box-shadow:0 6px 20px rgba(46,111,64,.4);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.btn-link{background:none;border:none;color:var(--brand);font-size:14px;font-weight:500;font-family:var(--body);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.btn-back{width:36px;height:36px;border-radius:50%;background:var(--g100);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+
+/* ── Form inputs ── */
+.input-wrap{display:flex;flex-direction:column;gap:6px;}
+.input-label{font-size:13px;font-weight:500;color:var(--g800);}
+.input-field{height:50px;width:100%;border:1.5px solid var(--g300);border-radius:14px;padding:0 16px;font-family:var(--body);font-size:15px;color:var(--g950);background:var(--white);outline:none;-webkit-appearance:none;transition:border-color .15s;}
+.input-field:focus{border-color:var(--brand);}
+.input-field::placeholder{color:var(--g400);}
+
+/* ── Step dots ── */
+.step-dots{display:flex;gap:6px;justify-content:center;}
+.step-dot{width:6px;height:6px;border-radius:50%;background:var(--g200);}
+.step-dot.on{width:22px;border-radius:3px;background:var(--brand);}
+
+/* ── Chips ── */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:100px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;}
+.chip-g{background:var(--brand-lt);color:var(--brand);}
+.chip-o{background:var(--accent-lt);color:var(--accent);}
+.chip-r{background:var(--error-lt);color:var(--error);}
+.chip-dk{background:var(--g950);color:#fff;}
+.chip-gy{background:var(--g100);color:var(--g600);}
+.sc-chip{height:40px;padding:0 16px;border-radius:100px;border:1.5px solid var(--g300);background:transparent;font-family:var(--body);font-size:14px;font-weight:500;color:var(--g600);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.sc-chip.on,.sc-chip:active{background:var(--g950);border-color:var(--g950);color:#fff;}
+
+/* ── Card ── */
+.card{background:var(--white);border:1px solid var(--g200);border-radius:16px;padding:16px;}
+.dcard{background:var(--white);border:1px solid var(--g200);border-radius:16px;padding:18px;}
+
+/* ── Bottom tab bar ── */
+.tab-bar{display:flex;align-items:stretch;background:var(--white);border-top:1px solid var(--g200);flex-shrink:0;padding-bottom:var(--safe-bottom);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:9px 4px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.tab-item svg{display:block;color:var(--g300);transition:color .15s;}
+.tab-item.on svg{color:var(--brand);}
+.tab-label{font-family:var(--body);font-size:10px;font-weight:500;color:var(--g400);}
+.tab-item.on .tab-label{color:var(--brand);}
+.tab-dot{width:4px;height:4px;border-radius:50%;background:var(--brand);margin-top:1px;}
+.tab-ai{flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:4px 4px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.tab-ai-bubble{width:46px;height:46px;border-radius:14px;background:var(--g950);box-shadow:0 4px 14px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;margin-top:-16px;flex-shrink:0;}
+.tab-ai-label{font-family:var(--body);font-size:10px;font-weight:600;color:var(--g700);}
+
+/* ── Metric bar ── */
+.mbar{background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.mtrack{height:6px;background:var(--g200);border-radius:3px;position:relative;overflow:hidden;}
+.mfill{height:100%;border-radius:3px;position:absolute;left:0;top:0;}
+
+/* ── Health ring ── */
+.hring{position:relative;width:110px;height:110px;flex-shrink:0;}
+.hring svg{position:absolute;inset:0;}
+.hrv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* ── Bottom sheet overlay ── */
+.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:20;opacity:0;pointer-events:none;transition:opacity .3s;}
+.sheet-overlay.open{opacity:1;pointer-events:all;}
+.sheet{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:28px 28px 0 0;padding:14px 22px calc(var(--safe-bottom) + 20px);display:flex;flex-direction:column;gap:14px;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);}
+.sheet-overlay.open .sheet{transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--g200);margin:0 auto 4px;}
+
+/* ── Upsell card ── */
+.upsell{background:var(--brand-xlt);border:1px solid rgba(46,111,64,.15);border-radius:18px;padding:18px;position:relative;overflow:hidden;}
+.upsell::before{content:'';position:absolute;right:-16px;top:-16px;width:100px;height:100px;border-radius:50%;background:rgba(46,111,64,.07);}
+
+/* ── Plant horizontal card ── */
+.phc{min-width:168px;background:var(--white);border:1px solid var(--g200);border-radius:18px;overflow:hidden;flex-shrink:0;}
+.phci{height:96px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;}
+.phcb{padding:10px 12px 13px;display:flex;flex-direction:column;gap:5px;}
+.plant-tag{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:var(--g600);background:var(--g100);padding:3px 7px;border-radius:6px;}
+.plant-tag.warn{color:var(--error);background:var(--error-lt);}
+.plant-tag.ok{color:var(--brand);background:var(--brand-lt);}
+
+/* ── Task card ── */
+.tc{display:flex;align-items:center;gap:13px;background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:14px;}
+.timg{width:46px;height:46px;border-radius:11px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.tchk{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--g300);flex-shrink:0;margin-left:auto;}
+
+/* ── Section eyebrow ── */
+.ey{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.09em;color:var(--brand);}
+
+/* ── Alert pills ── */
+.aprow{display:flex;gap:8px;overflow-x:auto;padding:10px 24px 0;scrollbar-width:none;}
+.aprow::-webkit-scrollbar{display:none;}
+.ap{display:flex;align-items:center;gap:7px;background:var(--white);border:1px solid var(--g200);border-radius:100px;padding:8px 14px;font-family:var(--body);font-size:12px;font-weight:500;flex-shrink:0;}
+.ap.warn{background:var(--error-lt);border-color:rgba(217,45,32,.2);}
+.ap.tip{background:var(--brand-lt);border-color:rgba(46,111,64,.2);}
+
+/* ── Tab switcher ── */
+.tsw{display:flex;background:var(--g100);border-radius:100px;padding:4px;}
+.tswi{flex:1;text-align:center;padding:8px 10px;border-radius:100px;font-family:var(--body);font-size:13px;font-weight:500;color:var(--g400);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.tswi.on{background:var(--g950);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+
+/* ── Diag cards ── */
+.diagc{background:var(--g50);border:1px solid var(--g200);border-radius:14px;padding:13px 15px;}
+.actc{display:flex;align-items:flex-start;gap:12px;background:var(--g50);border:1px solid var(--g200);border-radius:14px;padding:13px 15px;}
+.arn{width:22px;height:22px;border-radius:50%;background:var(--brand-lt);color:var(--brand);font-family:var(--mono);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+
+/* ── Camera/scan view ── */
+.cam-view{flex:1;background:var(--cam);position:relative;display:flex;flex-direction:column;overflow:hidden;}
+.scan-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:220px;height:240px;border:1.5px solid rgba(255,91,2,.5);border-radius:20px;}
+.corner{position:absolute;width:18px;height:18px;}
+.corner.tl{top:-9px;left:-9px;border-top:2.5px solid rgba(255,91,2,.9);border-left:2.5px solid rgba(255,91,2,.9);}
+.corner.tr{top:-9px;right:-9px;border-top:2.5px solid rgba(255,91,2,.9);border-right:2.5px solid rgba(255,91,2,.9);}
+.corner.bl{bottom:-9px;left:-9px;border-bottom:2.5px solid rgba(255,91,2,.9);border-left:2.5px solid rgba(255,91,2,.9);}
+.corner.br{bottom:-9px;right:-9px;border-bottom:2.5px solid rgba(255,91,2,.9);border-right:2.5px solid rgba(255,91,2,.9);}
+.scan-dot{position:absolute;border-radius:50%;background:#FF4B4B;box-shadow:0 0 8px #FF4B4B;}
+.cam-bottom{background:rgba(10,21,13,.97);flex-shrink:0;}
+.cam-mode-sw{display:flex;background:rgba(255,255,255,.07);border-radius:100px;padding:4px;gap:2px;}
+.cam-mode-btn{flex:1;text-align:center;padding:8px 12px;border-radius:100px;font-family:var(--body);font-size:12px;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+.cam-mode-btn.on{background:rgba(255,255,255,.1);color:#fff;}
+.shutter{width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.shutter-inner{width:50px;height:50px;border-radius:50%;background:var(--g950);}
+
+/* ── Chat bubbles ── */
+.bai{background:var(--g50);border:1px solid var(--g200);border-radius:18px 18px 18px 4px;padding:12px 15px;max-width:86%;font-size:14px;line-height:1.55;color:var(--g950);}
+.bme{background:var(--g950);border-radius:18px 18px 4px 18px;padding:12px 15px;max-width:74%;color:#fff;font-size:14px;line-height:1.55;}
+.crow{display:flex;gap:9px;align-items:flex-end;padding:5px 18px;}
+.crow-me{display:flex;justify-content:flex-end;padding:5px 18px;}
+.aav{width:32px;height:32px;border-radius:50%;background:var(--g950);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;align-self:flex-end;}
+
+/* ── Bot chips ── */
+.bot-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+.bot-chip{padding:7px 15px;border-radius:100px;border:1.5px solid var(--g300);background:transparent;font-family:var(--body);font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.bot-chip.sel{background:var(--brand);border-color:var(--brand);color:#fff;pointer-events:none;}
+
+/* ── Bot text input ── */
+.bot-text-wrap{margin-top:10px;display:flex;gap:8px;align-items:center;}
+.bot-text-input{flex:1;height:42px;border:1.5px solid var(--g300);border-radius:12px;padding:0 13px;font-family:var(--body);font-size:14px;color:var(--g950);background:var(--white);outline:none;-webkit-appearance:none;}
+.bot-text-input:focus{border-color:var(--brand);}
+.bot-text-input::placeholder{color:var(--g400);}
+.bot-send{width:38px;height:38px;border-radius:50%;background:var(--g950);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+
+/* ── AI tag ── */
+.ai-tag{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-family:var(--mono);font-size:10px;color:var(--brand);background:var(--brand-lt);border:1px solid rgba(46,111,64,.2);border-radius:6px;padding:3px 9px;}
+
+/* ── Lux CTA ── */
+.lux-cta{margin-top:10px;background:var(--brand-xlt);border:1.5px solid rgba(46,111,64,.2);border-radius:12px;padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.lux-icon{width:26px;height:26px;border-radius:8px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+
+/* ── Lux modal ── */
+.lux-modal{position:absolute;inset:0;background:var(--cam);z-index:50;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .3s;}
+.lux-modal.open{opacity:1;pointer-events:all;}
+.lux-rings{position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;}
+.lux-ring{position:absolute;border-radius:50%;}
+.lux-ring-o{width:180px;height:180px;border:1px solid rgba(164,198,57,.2);}
+.lux-ring-m{width:145px;height:145px;border:1px solid rgba(164,198,57,.35);animation:ringPulse 2.5s ease-in-out infinite;}
+.lux-ring-i{width:108px;height:108px;border:1.5px solid rgba(164,198,57,.65);background:rgba(164,198,57,.05);}
+@keyframes ringPulse{0%,100%{border-color:rgba(164,198,57,.35);}50%{border-color:rgba(164,198,57,.7);}}
+.lux-val{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent);position:relative;z-index:2;text-align:center;}
+.lux-unit{font-family:var(--mono);font-size:9px;color:rgba(164,198,57,.7);letter-spacing:.12em;margin-top:2px;position:relative;z-index:2;}
+.lux-bracket{position:absolute;width:20px;height:20px;}
+.lux-bracket.tl{top:10%;left:8%;border-top:2px solid rgba(164,198,57,.6);border-left:2px solid rgba(164,198,57,.6);}
+.lux-bracket.tr{top:10%;right:8%;border-top:2px solid rgba(164,198,57,.6);border-right:2px solid rgba(164,198,57,.6);}
+.lux-bracket.bl{bottom:10%;left:8%;border-bottom:2px solid rgba(164,198,57,.6);border-left:2px solid rgba(164,198,57,.6);}
+.lux-bracket.br{bottom:10%;right:8%;border-bottom:2px solid rgba(164,198,57,.6);border-right:2px solid rgba(164,198,57,.6);}
+
+/* ── Lux result card ── */
+.lux-card{margin-top:10px;background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:9px;}
+.lux-prog-track{height:5px;background:var(--g200);border-radius:3px;position:relative;overflow:hidden;}
+.lux-prog-fill{height:100%;border-radius:3px;background:var(--brand);position:absolute;left:0;top:0;transition:width .5s ease;}
+.lux-meta-row{display:flex;gap:8px;}
+.lux-meta{flex:1;background:var(--brand-xlt);border:1px solid rgba(46,111,64,.12);border-radius:9px;padding:7px 9px;}
+.lux-ml{font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--brand);margin-bottom:2px;}
+.lux-mv{font-size:12px;font-weight:600;color:var(--g950);}
+
+/* ── Typing indicator ── */
+.typing{display:flex;align-items:center;gap:4px;padding:10px 15px;background:var(--g50);border:1px solid var(--g200);border-radius:18px 18px 18px 4px;}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--g400);animation:tp 1.2s infinite ease-in-out;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes tp{0%,80%,100%{transform:scale(.65);opacity:.35;}40%{transform:scale(1);opacity:1;}}
+
+/* ── Bot state strip ── */
+.bot-state{display:flex;background:var(--g50);border-bottom:1px solid var(--g200);flex-shrink:0;}
+.bsn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-right:1px solid var(--g200);}
+.bsn:last-child{border-right:none;}
+.bsn.active{background:rgba(46,111,64,.06);}
+.bsn.done{background:rgba(46,111,64,.04);}
+.bsn-dot{width:18px;height:18px;border-radius:50%;background:var(--g200);border:1px solid var(--g300);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;color:var(--g600);}
+.bsn.active .bsn-dot{background:var(--brand);border-color:var(--brand);color:#fff;}
+.bsn.done .bsn-dot{background:var(--brand-lt);border-color:var(--brand);color:var(--brand);}
+.bsn-label{font-family:var(--mono);font-size:7px;letter-spacing:.04em;color:var(--g400);}
+.bsn.active .bsn-label{color:var(--brand);}
+
+/* ── Bot input bar ── */
+.bot-ci{padding:10px 16px calc(var(--safe-bottom) + 10px);background:var(--white);border-top:1px solid var(--g100);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.bot-ci-field{flex:1;background:var(--g50);border:1px solid var(--g200);border-radius:100px;padding:10px 15px;font-family:var(--body);font-size:14px;color:var(--g400);outline:none;}
+.bot-ci-cam{width:40px;height:40px;border-radius:50%;background:var(--g950);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;box-shadow:0 4px 10px rgba(0,0,0,.25);}
+
+/* ── Coming soon overlay ── */
+.coming-soon{position:absolute;inset:0;background:rgba(250,250,248,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:30;}
+.cs-icon{width:64px;height:64px;border-radius:20px;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:28px;}
+.cs-title{font-family:var(--serif);font-size:24px;color:var(--g950);}
+.cs-sub{font-size:14px;color:var(--g600);}
+
+/* ── Screen transitions ── */
+@keyframes bubbleIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.bubble-in{animation:bubbleIn .22s ease forwards;}
+
+/* ── Divider ── */
+.dv{height:1px;background:var(--g200);}
+
+/* ── Row/col helpers ── */
+.row{display:flex;align-items:center;}
+.col{display:flex;flex-direction:column;}
+.rsb{display:flex;align-items:center;justify-content:space-between;}
+.f1{flex:1;min-width:0;}
+.g2{gap:2px;}.g4{gap:4px;}.g6{gap:6px;}.g7{gap:7px;}.g8{gap:8px;}.g10{gap:10px;}.g12{gap:12px;}.g14{gap:14px;}.g16{gap:16px;}
+.hscrl{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.hscrl::-webkit-scrollbar{display:none;}
+.d{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dg{background:var(--brand)}.do{background:var(--accent)}.dr{background:var(--error)}.dm{background:var(--g300);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ════════════════════════════
+     S-01  SPLASH
+════════════════════════════ -->
+<div class="screen active" id="s-splash" style="background:var(--cam);align-items:center;justify-content:center;gap:18px;">
+  <div style="width:80px;height:80px;border-radius:26px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 12px 40px rgba(46,111,64,.55);">🌿</div>
+  <div style="text-align:center;">
+    <h1 style="font-family:var(--serif);font-size:42px;color:#fff;letter-spacing:-.04em;line-height:1;">SproutNow</h1>
+    <p style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.12em;margin-top:8px;">PLANT INTELLIGENCE</p>
+  </div>
+  <div style="position:absolute;bottom:calc(var(--safe-bottom)+48px);left:0;right:0;display:flex;justify-content:center;">
+    <div style="width:28px;height:4px;background:rgba(255,255,255,.3);border-radius:2px;"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-02a  ONBOARDING 1
+════════════════════════════ -->
+<div class="screen" id="s-ob1" style="background:var(--page);">
+  <div class="status-bar dark"><span class="st-time">9:41</span><span class="st-icons" style="color:var(--g800);">●●●</span></div>
+  <div class="s-scroll">
+    <div class="px col g18" style="padding-top:32px;gap:22px;">
+      <div style="width:100%;height:260px;background:var(--brand-lt);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:90px;">🌱</div>
+      <div class="step-dots"><div class="step-dot on"></div><div class="step-dot"></div><div class="step-dot"></div></div>
+      <div class="col g10">
+        <h2 style="font-family:var(--serif);font-size:32px;line-height:1.1;letter-spacing:-.02em;">Know exactly when<br>to water</h2>
+        <p style="font-size:15px;color:var(--g600);line-height:1.55;">AI-powered moisture decay curves predict your plant's needs before it shows stress.</p>
+      </div>
+    </div>
+  </div>
+  <div class="px col g12 safe-bot" style="padding-top:16px;">
+    <div class="btn-primary" onclick="go('s-ob2')">Next</div>
+    <div style="text-align:center;"><button class="btn-link" onclick="go('s-auth')">Skip intro</button></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-02b  ONBOARDING 2
+════════════════════════════ -->
+<div class="screen" id="s-ob2" style="background:var(--page);">
+  <div class="status-bar dark"><span class="st-time">9:41</span><span class="st-icons" style="color:var(--g800);">●●●</span></div>
+  <div class="s-scroll">
+    <div class="px col" style="padding-top:32px;gap:22px;">
+      <div style="width:100%;height:260px;background:var(--accent-lt);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:90px;">📡</div>
+      <div class="step-dots"><div class="step-dot"></div><div class="step-dot on"></div><div class="step-dot"></div></div>
+      <div class="col g10">
+        <h2 style="font-family:var(--serif);font-size:32px;line-height:1.1;letter-spacing:-.02em;">Measure light with<br>your camera</h2>
+        <p style="font-size:15px;color:var(--g600);line-height:1.55;">SproutLux uses your phone camera to calculate ambient lux — no sensors needed.</p>
+      </div>
+    </div>
+  </div>
+  <div class="px col g12 safe-bot" style="padding-top:16px;">
+    <div class="btn-primary" onclick="go('s-auth')">Next</div>
+    <div style="text-align:center;"><button class="btn-link" onclick="go('s-auth')">Skip intro</button></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-03  AUTH
+════════════════════════════ -->
+<div class="screen" id="s-auth" style="background:var(--white);">
+  <div class="status-bar dark"><span class="st-time">9:41</span></div>
+  <div class="s-scroll">
+    <div class="px col" style="padding-top:48px;gap:6px;">
+      <span style="font-size:30px;">🌿</span>
+      <h2 style="font-family:var(--serif);font-size:32px;line-height:1.1;letter-spacing:-.02em;margin-top:8px;">Create your<br>garden account</h2>
+      <p style="font-size:14px;color:var(--g600);margin-top:4px;">Join 240,000 plant parents</p>
+    </div>
+    <div class="px col g16" style="padding-top:30px;">
+      <div class="input-wrap"><label class="input-label">Name</label><input class="input-field" placeholder="Alex Bloom" /></div>
+      <div class="input-wrap"><label class="input-label">Email</label><input class="input-field" type="email" placeholder="alex@example.com" /></div>
+      <div class="input-wrap"><label class="input-label">Password</label><input class="input-field" type="password" placeholder="Min. 8 characters" /></div>
+    </div>
+    <div style="height:24px;"></div>
+  </div>
+  <div class="px col g12 safe-bot" style="padding-top:12px;border-top:1px solid var(--g100);">
+    <div class="btn-primary" onclick="go('s-w1')">Create account</div>
+    <div class="btn-ghost" onclick="go('s-w1')">Continue with Google</div>
+    <div style="text-align:center;"><span style="font-size:13px;color:var(--g600);">Already have an account? </span><button class="btn-link" onclick="go('s-w1')">Sign in</button></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-04  WIZARD: IDENTIFY
+════════════════════════════ -->
+<div class="screen" id="s-w1" style="background:var(--white);">
+  <div class="status-bar dark"><span class="st-time">9:41</span></div>
+  <div class="px rsb" style="padding-top:8px;padding-bottom:8px;flex-shrink:0;">
+    <button class="btn-link" onclick="go('s-auth')" style="color:var(--g600);">Cancel</button>
+    <span style="font-size:16px;font-weight:600;">Add plant</span>
+    <button class="btn-link" onclick="go('s-w2')" style="opacity:.4;">Next</button>
+  </div>
+  <div style="padding:4px 24px 10px;flex-shrink:0;"><div class="step-dots"><div class="step-dot on"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div></div></div>
+  <div class="s-scroll">
+    <div class="px col g16" style="padding-top:10px;padding-bottom:24px;">
+      <div class="col g4"><p class="ey">STEP 1 OF 4</p><h2 style="font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.02em;">What plant is this?</h2></div>
+      <div class="input-wrap"><input class="input-field" id="species-field" placeholder="Search species…" /></div>
+      <div style="border:1.5px dashed var(--g300);border-radius:16px;height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer;" onclick="go('s-w2')">
+        <span style="font-size:28px;">📷</span>
+        <span style="font-size:14px;font-weight:500;color:var(--g700);">Take a photo to identify</span>
+        <span style="font-size:12px;color:var(--g400);">Powered by Plant.id</span>
+      </div>
+      <div class="col g8">
+        <p style="font-size:13px;color:var(--g600);">Popular plants</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="species-chips">
+          <div class="sc-chip on" onclick="selectSpecies(this,'Monstera deliciosa')">🌿 Monstera</div>
+          <div class="sc-chip" onclick="selectSpecies(this,'Cactus')">🌵 Cactus</div>
+          <div class="sc-chip" onclick="selectSpecies(this,'Pothos')">🌱 Pothos</div>
+          <div class="sc-chip" onclick="selectSpecies(this,'Bird of Paradise')">🌺 Bird of Paradise</div>
+          <div class="sc-chip" onclick="selectSpecies(this,'Fiddle-leaf Fig')">🍃 Fiddle-leaf Fig</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-05  WIZARD: POT & SOIL
+════════════════════════════ -->
+<div class="screen" id="s-w2" style="background:var(--white);">
+  <div class="status-bar dark"><span class="st-time">9:41</span></div>
+  <div class="px rsb" style="padding-top:8px;padding-bottom:8px;flex-shrink:0;">
+    <div class="btn-back" onclick="go('s-w1')">←</div>
+    <span style="font-size:16px;font-weight:600;">Add plant</span>
+    <button class="btn-link" onclick="go('s-w3')">Next</button>
+  </div>
+  <div style="padding:4px 24px 10px;flex-shrink:0;"><div class="step-dots"><div class="step-dot"></div><div class="step-dot on"></div><div class="step-dot"></div><div class="step-dot"></div></div></div>
+  <div class="s-scroll">
+    <div class="px col g18" style="padding-top:10px;padding-bottom:24px;gap:20px;">
+      <div class="col g4"><p class="ey">STEP 2 OF 4</p><h2 style="font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.02em;">Pot & soil details</h2></div>
+      <div class="input-wrap g8">
+        <span style="font-size:14px;font-weight:500;">Pot material</span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="pot-chips">
+          <div class="sc-chip on" onclick="toggleChip(this,'pot-chips')">Terracotta</div>
+          <div class="sc-chip" onclick="toggleChip(this,'pot-chips')">Ceramic</div>
+          <div class="sc-chip" onclick="toggleChip(this,'pot-chips')">Plastic</div>
+          <div class="sc-chip" onclick="toggleChip(this,'pot-chips')">LECA</div>
+        </div>
+      </div>
+      <div class="input-wrap g8">
+        <span style="font-size:14px;font-weight:500;">Drainage</span>
+        <div style="display:flex;gap:10px;" id="drain-chips">
+          <div class="sc-chip on f1" style="justify-content:center;" onclick="toggleChip(this,'drain-chips')">Yes</div>
+          <div class="sc-chip f1" style="justify-content:center;" onclick="toggleChip(this,'drain-chips')">No</div>
+        </div>
+      </div>
+      <div class="input-wrap g8">
+        <span style="font-size:14px;font-weight:500;">Soil medium</span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="soil-chips">
+          <div class="sc-chip on" onclick="toggleChip(this,'soil-chips')">Peat-perlite</div>
+          <div class="sc-chip" onclick="toggleChip(this,'soil-chips')">Coco coir</div>
+          <div class="sc-chip" onclick="toggleChip(this,'soil-chips')">LECA</div>
+          <div class="sc-chip" onclick="toggleChip(this,'soil-chips')">Standard mix</div>
+        </div>
+      </div>
+      <div class="input-wrap"><span style="font-size:14px;font-weight:500;">Pot size (cm)</span><input class="input-field" placeholder="e.g. 18" /></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-05b WIZARD: LIGHT
+════════════════════════════ -->
+<div class="screen" id="s-w3" style="background:var(--white);">
+  <div class="status-bar dark"><span class="st-time">9:41</span></div>
+  <div class="px rsb" style="padding-top:8px;padding-bottom:8px;flex-shrink:0;">
+    <div class="btn-back" onclick="go('s-w2')">←</div>
+    <span style="font-size:16px;font-weight:600;">Add plant</span>
+    <button class="btn-link" onclick="go('s-w4')">Next</button>
+  </div>
+  <div style="padding:4px 24px 10px;flex-shrink:0;"><div class="step-dots"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot on"></div><div class="step-dot"></div></div></div>
+  <div class="s-scroll">
+    <div class="px col g20" style="padding-top:10px;padding-bottom:24px;gap:20px;">
+      <div class="col g4"><p class="ey">STEP 3 OF 4</p><h2 style="font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.02em;">Light & location</h2></div>
+      <div class="input-wrap g8">
+        <span style="font-size:14px;font-weight:500;">Room</span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="room-chips">
+          <div class="sc-chip on" onclick="toggleChip(this,'room-chips')">Living room</div>
+          <div class="sc-chip" onclick="toggleChip(this,'room-chips')">Bedroom</div>
+          <div class="sc-chip" onclick="toggleChip(this,'room-chips')">Kitchen</div>
+          <div class="sc-chip" onclick="toggleChip(this,'room-chips')">Balcony</div>
+          <div class="sc-chip" onclick="toggleChip(this,'room-chips')">Office</div>
+        </div>
+      </div>
+      <div class="input-wrap g8">
+        <span style="font-size:14px;font-weight:500;">Natural light</span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="light-chips">
+          <div class="sc-chip" onclick="toggleChip(this,'light-chips')">Low · shade</div>
+          <div class="sc-chip on" onclick="toggleChip(this,'light-chips')">Medium indirect</div>
+          <div class="sc-chip" onclick="toggleChip(this,'light-chips')">Bright direct</div>
+        </div>
+      </div>
+      <div style="background:var(--brand-xlt);border:1.5px solid rgba(46,111,64,.2);border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:11px;cursor:pointer;" onclick="go('s-w4')">
+        <div style="width:28px;height:28px;background:var(--brand);border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;">☀</div>
+        <div class="col g1 f1">
+          <span style="font-size:13px;font-weight:600;color:var(--brand-700);">Measure lux precisely</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--g600);">Launch SproutLux bridge →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-06  WIZARD: SCHEDULE PREVIEW
+════════════════════════════ -->
+<div class="screen" id="s-w4" style="background:var(--white);">
+  <div class="status-bar dark"><span class="st-time">9:41</span></div>
+  <div class="px rsb" style="padding-top:8px;padding-bottom:8px;flex-shrink:0;">
+    <div class="btn-back" onclick="go('s-w3')">←</div>
+    <span style="font-size:16px;font-weight:600;">Add plant</span>
+    <span style="font-size:14px;font-weight:600;color:var(--g400);">Done</span>
+  </div>
+  <div style="padding:4px 24px 10px;flex-shrink:0;"><div class="step-dots"><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div><div class="step-dot on"></div></div></div>
+  <div class="s-scroll">
+    <div class="px col g14" style="padding-top:10px;padding-bottom:24px;">
+      <div class="col g4"><p class="ey">STEP 4 OF 4 · PREVIEW</p><h2 style="font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.02em;">Your care schedule</h2></div>
+      <div class="dcard col g14">
+        <div class="row g12">
+          <div style="width:52px;height:52px;border-radius:14px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🌿</div>
+          <div class="col g2 f1"><span style="font-family:var(--serif);font-size:20px;line-height:1.1;" id="preview-name">Monstera deliciosa</span><span style="font-size:12px;color:var(--g600);">Living room · Medium indirect</span></div>
+        </div>
+        <div class="dv"></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;">
+          <div style="border-radius:12px;padding:11px 10px;background:var(--brand-lt);display:flex;flex-direction:column;gap:3px;"><span style="font-family:var(--mono);font-size:8px;color:var(--brand);">WATER</span><span style="font-size:14px;font-weight:700;color:var(--brand);">Every 8d</span></div>
+          <div style="border-radius:12px;padding:11px 10px;background:var(--accent-lt);display:flex;flex-direction:column;gap:3px;"><span style="font-family:var(--mono);font-size:8px;color:var(--accent);">FERTILIZE</span><span style="font-size:14px;font-weight:700;color:var(--accent);">Monthly</span></div>
+          <div style="border-radius:12px;padding:11px 10px;background:var(--g100);display:flex;flex-direction:column;gap:3px;"><span style="font-family:var(--mono);font-size:8px;color:var(--g400);">REPOT</span><span style="font-size:13px;font-weight:600;color:var(--g600);">Sep 26</span></div>
+        </div>
+        <div class="mbar"><div class="rsb"><span style="font-family:var(--mono);font-size:9px;color:var(--g600);letter-spacing:.06em;">LIGHT (LUX)</span><span class="chip chip-g" style="font-size:8px;padding:2px 8px;">optimal</span></div><div class="mtrack"><div class="mfill" style="width:72%;background:var(--brand);"></div></div></div>
+      </div>
+      <div style="background:var(--brand-xlt);border:1px solid rgba(46,111,64,.15);border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;">⚠️</span>
+        <p style="font-size:13px;color:var(--g700);line-height:1.4;"><strong>Toxic to cats.</strong> Keep out of reach. Alert added to plant profile.</p>
+      </div>
+    </div>
+  </div>
+  <div class="px col g12 safe-bot" style="padding-top:12px;border-top:1px solid var(--g100);">
+    <div class="btn-primary" onclick="go('s-home')">Add to My Garden 🌿</div>
+    <div class="btn-ghost" onclick="go('s-w3')">Edit details</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-07  HOME
+════════════════════════════ -->
+<div class="screen" id="s-home" style="background:var(--page);">
+  <div style="padding:calc(var(--safe-top)+4px) 24px 0;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;">
+    <div class="col g2"><p style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.1em;">GOOD MORNING</p><h1 style="font-family:var(--serif);font-size:34px;line-height:1.1;letter-spacing:-.03em;">Alex 👋</h1></div>
+    <div style="display:flex;align-items:center;gap:5px;background:var(--white);border:1px solid var(--g200);border-radius:100px;padding:6px 12px;font-size:12px;font-weight:500;color:var(--g700);margin-bottom:4px;">☀️ 23°C</div>
+  </div>
+  <div class="s-scroll">
+    <div style="padding:12px 24px 0;">
+      <div style="background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:11px 14px;display:flex;align-items:center;gap:9px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="var(--g400)" stroke-width="1.5"/><path d="M10 10l3 3" stroke="var(--g400)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span style="flex:1;font-size:13px;color:var(--g400);">Search plants…</span>
+      </div>
+    </div>
+    <div class="aprow">
+      <div class="ap warn">⚠️ High temps today</div>
+      <div class="ap tip" style="cursor:pointer;" onclick="go('s-alert')"><span style="background:var(--brand);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">3</span>Pending tasks</div>
+      <div class="ap" style="background:var(--accent-lt);border-color:rgba(255,91,2,.2);color:var(--accent);">💧 1 plant overdue</div>
+    </div>
+    <div style="padding:14px 24px 0;">
+      <div class="upsell">
+        <div class="row g7" style="margin-bottom:8px;"><span style="font-size:15px;">🌿</span><span class="ey" style="letter-spacing:.06em;">BECOME A SMART SPROUTY</span></div>
+        <p style="font-size:13px;color:var(--g600);line-height:1.5;margin-bottom:12px;">Unlock IoT analytics, personalised care schedules, and botanist access.</p>
+        <div class="btn-brand">Subscribe to Unlock</div>
+      </div>
+    </div>
+    <div class="rsb" style="padding:16px 24px 8px;"><span style="font-size:15px;font-weight:600;">My Plants</span><span style="font-size:13px;font-weight:600;color:var(--brand);">View all</span></div>
+    <div class="hscrl" style="padding:0 24px 10px;">
+      <div class="phc" style="cursor:pointer;" onclick="showPlantSheet()">
+        <div class="phci">🌿<div style="position:absolute;top:7px;right:7px;"><span class="chip chip-g" style="font-size:8px;padding:2px 7px;">89%</span></div></div>
+        <div class="phcb"><span style="font-size:13px;font-weight:500;">Monstera</span><div class="row g4" style="flex-wrap:wrap;margin-top:2px;"><span class="plant-tag ok">Watered</span><span class="plant-tag warn">Toxic</span></div><div style="margin-top:3px;"><span class="plant-tag">Water in 4d</span></div></div>
+      </div>
+      <div class="phc" style="border-color:rgba(217,45,32,.3);cursor:pointer;" onclick="go('s-alert')">
+        <div class="phci" style="background:var(--error-lt);">🍃</div>
+        <div class="phcb"><span style="font-size:13px;font-weight:500;">Fiddle Fig</span><div style="margin-top:3px;"><span class="plant-tag warn">OVERDUE 3d</span></div><div style="margin-top:3px;"><span class="plant-tag warn">Soil: 12%</span></div></div>
+      </div>
+      <div class="phc">
+        <div class="phci">🌵</div>
+        <div class="phcb"><span style="font-size:13px;font-weight:500;">Lil Cactus</span><div style="margin-top:3px;"><span class="plant-tag">Water Jul 1</span></div></div>
+      </div>
+    </div>
+    <div style="padding:4px 24px 8px;"><div class="tsw"><div class="tswi on" id="tsw-todo" onclick="switchTask('todo')">To do</div><div class="tswi" id="tsw-care" onclick="switchTask('care')">Care info</div><div class="tswi" id="tsw-hist" onclick="switchTask('history')">History</div></div></div>
+    <div class="col g8" style="padding:4px 24px 32px;" id="task-list">
+      <div class="rsb" style="padding-bottom:2px;"><span style="font-size:13px;font-weight:600;">Office (2)</span><span style="font-size:12px;font-weight:600;color:var(--brand);">View all</span></div>
+      <div class="tc"><div class="timg">🌿</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Water Monstera</span><span style="font-size:12px;color:var(--error);">Overdue · 2 days</span></div><div class="tchk"></div></div>
+      <div class="tc"><div class="timg">🌱</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Fertilize Peace Lily</span><span style="font-size:12px;color:var(--brand);">Due today</span></div><div class="tchk"></div></div>
+    </div>
+  </div>
+  <!-- Bottom tab bar -->
+  <div class="tab-bar">
+    <div class="tab-item on">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v8a1 1 0 01-1 1H4a1 1 0 01-1-1V8z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      <span class="tab-label">Home</span><div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" onclick="showComingSoon('s-home','Explore')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M7 13l2-4 4-2-2 4-4 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <span class="tab-label">Explore</span>
+    </div>
+    <div class="tab-ai" onclick="go('s-sproutai')">
+      <div class="tab-ai-bubble">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3a3 3 0 013 3v4a3 3 0 01-6 0V6a3 3 0 013-3z" stroke="#fff" stroke-width="1.5"/><path d="M5 9v1a5 5 0 0010 0V9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="tab-ai-label">SproutAI</span>
+    </div>
+    <div class="tab-item" onclick="showComingSoon('s-home','My Garden')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="tab-label">My Garden</span>
+    </div>
+    <div class="tab-item" onclick="showComingSoon('s-home','Profile')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="tab-label">Profile</span>
+    </div>
+  </div>
+  <!-- Plant detail sheet overlay -->
+  <div class="sheet-overlay" id="plant-sheet-overlay" onclick="hidePlantSheet()">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="row g12">
+        <div style="width:52px;height:52px;border-radius:14px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🌿</div>
+        <div class="col g2 f1"><span style="font-family:var(--serif);font-size:20px;line-height:1.1;">Monstera</span><span style="font-size:12px;color:var(--g600);">Monstera deliciosa · Living room</span></div>
+        <span class="chip chip-o" style="align-self:flex-start;font-size:9px;padding:3px 9px;">⚠ Toxic</span>
+      </div>
+      <div class="row g12" style="justify-content:center;">
+        <div class="hring">
+          <svg viewBox="0 0 110 110" width="110" height="110"><circle cx="55" cy="55" r="46" fill="none" stroke="var(--g200)" stroke-width="6"/><circle cx="55" cy="55" r="46" fill="none" stroke="var(--brand)" stroke-width="6" stroke-dasharray="289" stroke-dashoffset="32" stroke-linecap="round" transform="rotate(-90 55 55)"/></svg>
+          <div class="hrv"><span style="font-size:22px;font-weight:700;color:var(--brand);">89</span><span style="font-family:var(--mono);font-size:8px;color:var(--g600);letter-spacing:.09em;">HEALTH</span></div>
+        </div>
+        <div class="col g8 f1">
+          <div class="row g5"><div class="d dg"></div><span style="font-size:13px;">Water in <strong>4 days</strong></span></div>
+          <div class="row g5"><div class="d do"></div><span style="font-size:13px;">Fertilize <strong>Jul 10</strong></span></div>
+          <div class="row g5"><div class="d dm"></div><span style="font-size:13px;">Repot <strong>Sep 2026</strong></span></div>
+        </div>
+      </div>
+      <div class="dv"></div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;border-radius:12px;padding:11px 10px;background:var(--brand-lt);display:flex;flex-direction:column;gap:3px;"><span style="font-family:var(--mono);font-size:8px;color:var(--brand);">WATER</span><span style="font-size:13px;font-weight:600;">Jun 8</span></div>
+        <div style="flex:1;border-radius:12px;padding:11px 10px;background:var(--accent-lt);display:flex;flex-direction:column;gap:3px;"><span style="font-family:var(--mono);font-size:8px;color:var(--accent);">FERTILIZE</span><span style="font-size:13px;font-weight:600;">Jul 10</span></div>
+        <div style="flex:1;border-radius:12px;padding:11px 10px;background:var(--g100);display:flex;flex-direction:column;gap:3px;"><span style="font-family:var(--mono);font-size:8px;color:var(--g400);">REPOT</span><span style="font-size:12px;font-weight:600;color:var(--g600);">Sep 26</span></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;background:var(--g950);color:#fff;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;" onclick="hidePlantSheet()">Water now</div>
+        <div style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--g300);border-radius:100px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;" onclick="hidePlantSheet();go('s-sproutai')">AI Scan</div>
+        <div style="flex:1;height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--g300);border-radius:100px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;" onclick="hidePlantSheet()">Edit</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-10  SPROUTAI CAMERA
+════════════════════════════ -->
+<div class="screen" id="s-sproutai" style="background:var(--cam);">
+  <!-- Top bar -->
+  <div style="position:absolute;top:0;left:0;right:0;z-index:5;padding:calc(var(--safe-top)+4px) 20px 0;display:flex;align-items:center;justify-content:space-between;">
+    <div style="width:34px;height:34px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer;" onclick="go('s-home')">✕</div>
+    <span style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.35);letter-spacing:.08em;">SPROUT AI</span>
+    <div style="background:rgba(255,255,255,.1);border-radius:100px;padding:5px 13px;font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;" onclick="go('s-botanist')">Botanist →</div>
+  </div>
+  <!-- Camera zone -->
+  <div class="cam-view">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(255,91,2,.07) 0%,transparent 70%);"></div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;">
+      <span style="font-size:90px;opacity:.3;transform:rotate(-8deg);">🍃</span>
+      <div class="scan-box">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="scan-dot" style="width:11px;height:11px;top:30%;left:38%;"></div>
+        <div class="scan-dot" style="width:8px;height:8px;top:52%;left:60%;opacity:.8;"></div>
+      </div>
+      <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;">
+        <span style="font-family:var(--mono);font-size:8px;color:rgba(255,91,2,.65);letter-spacing:.1em;">SCANNING FOR ISSUES — HOLD STILL</span>
+      </div>
+    </div>
+  </div>
+  <!-- Mode switcher -->
+  <div class="cam-bottom" style="padding:10px 20px;">
+    <div class="cam-mode-sw" id="cam-modes">
+      <div class="cam-mode-btn on" onclick="setCamMode(this)">♡ Diagnose</div>
+      <div class="cam-mode-btn" onclick="setCamMode(this);go('s-botanist')">🤖 Botanist</div>
+      <div class="cam-mode-btn" onclick="setCamMode(this)">🌱 Plant care</div>
+    </div>
+  </div>
+  <!-- Shutter bar -->
+  <div class="cam-bottom" style="padding:10px 20px calc(var(--safe-bottom)+14px);display:flex;align-items:center;justify-content:space-around;">
+    <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;">🖼</div>
+    <div class="shutter" onclick="go('s-diagnosis')"><div class="shutter-inner"></div></div>
+    <div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;">⚡</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-11  DIAGNOSIS RESULT
+════════════════════════════ -->
+<div class="screen" id="s-diagnosis" style="background:var(--white);">
+  <div style="padding:calc(var(--safe-top)+4px) 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div class="btn-back" onclick="go('s-sproutai')">←</div>
+    <span style="font-size:16px;font-weight:600;">Diagnosis</span>
+    <span style="font-size:14px;font-weight:600;color:var(--brand);cursor:pointer;">Share</span>
+  </div>
+  <div class="s-scroll">
+    <div class="px col g10" style="padding-top:16px;">
+      <div class="row g8 " style="flex-wrap:wrap;">
+        <span class="chip chip-g" style="font-size:10px;padding:5px 12px;"><span class="d dg" style="width:6px;height:6px;margin-right:2px;display:inline-block;border-radius:50%;background:var(--brand);"></span>94% confidence</span>
+        <span class="chip chip-o" style="font-size:10px;padding:5px 12px;">MODERATE</span>
+      </div>
+      <h2 style="font-family:var(--serif);font-size:28px;line-height:1.2;letter-spacing:-.02em;">Root Rot<br>(Early Stage)</h2>
+      <p style="font-size:12px;color:var(--g600);">Monstera deliciosa · Detected Jun 8, 2026</p>
+    </div>
+    <div style="background:var(--brand-lt);height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-top:14px;flex-shrink:0;">
+      <span style="font-size:64px;opacity:.2;">🍃</span>
+      <div style="position:absolute;width:68px;height:48px;background:rgba(217,45,32,.2);border:1.5px solid rgba(217,45,32,.65);border-radius:8px;">
+        <span style="position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:var(--error);white-space:nowrap;">Rot zone</span>
+      </div>
+    </div>
+    <div class="px col g12" style="padding-top:16px;padding-bottom:28px;">
+      <div class="diagc"><div class="row g8" style="margin-bottom:8px;"><div class="d dg"></div><span style="font-size:13px;font-weight:600;color:var(--brand);">Cause</span></div><p style="font-size:13px;color:var(--g600);line-height:1.5;">Overwatering + poor drainage. Soil saturation exceeded 85% for 12+ days.</p></div>
+      <div class="diagc"><div class="row g8" style="margin-bottom:8px;"><div class="d do"></div><span style="font-size:13px;font-weight:600;color:var(--accent);">Symptoms</span></div><p style="font-size:13px;color:var(--g600);line-height:1.5;">Yellowing lower leaves, soft black stem base, musty odour.</p></div>
+      <div class="diagc"><div class="row g8" style="margin-bottom:8px;"><div class="d" style="background:var(--success);"></div><span style="font-size:13px;font-weight:600;color:var(--success);">Treatment</span></div><p style="font-size:13px;color:var(--g600);line-height:1.5;">Remove from pot. Trim black roots. Repot in dry peat-perlite. Reduce watering 40%.</p></div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-top:6px;">
+        <div class="btn-primary" onclick="go('s-home')">Apply treatment plan</div>
+        <div class="btn-ghost" onclick="go('s-botanist')">Book a botanist instead →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-BOTANIST  CONVERSATIONAL
+════════════════════════════ -->
+<div class="screen" id="s-botanist" style="background:var(--white);">
+  <!-- Nav -->
+  <div style="padding:calc(var(--safe-top)+4px) 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g100);flex-shrink:0;">
+    <div class="btn-back" onclick="go('s-sproutai')">←</div>
+    <span style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.08em;">SPROUT AI · BOTANIST</span>
+    <div style="width:36px;"></div>
+  </div>
+  <!-- State strip -->
+  <div class="bot-state" id="bot-state-strip">
+    <div class="bsn active" id="bsn-1"><div class="bsn-dot" id="bsdot-1">1</div><span class="bsn-label">IDENTIFY</span></div>
+    <div class="bsn" id="bsn-2"><div class="bsn-dot" id="bsdot-2">2</div><span class="bsn-label">LOCATION</span></div>
+    <div class="bsn" id="bsn-3"><div class="bsn-dot" id="bsdot-3">3</div><span class="bsn-label">LIGHT</span></div>
+    <div class="bsn" id="bsn-done"><div class="bsn-dot" id="bsdot-done">✓</div><span class="bsn-label">DONE</span></div>
+  </div>
+  <!-- Chat scroll -->
+  <div class="s-scroll" id="bot-scroll"></div>
+  <!-- Input bar -->
+  <div class="bot-ci">
+    <div class="bot-ci-field" id="bot-ci" contenteditable="true" onkeydown="handleBotKey(event)"></div>
+    <div class="bot-ci-cam" onclick="handleBotCam()">📷</div>
+  </div>
+  <!-- SproutLux modal -->
+  <div class="lux-modal" id="lux-modal">
+    <div style="padding:calc(var(--safe-top)+4px) 22px 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <span style="font-size:15px;font-weight:600;color:#fff;">9:41</span>
+      <div style="background:rgba(255,255,255,.1);border-radius:100px;padding:5px 14px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.7);cursor:pointer;" onclick="closeLux()">← Back</div>
+    </div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;">
+      <div class="lux-bracket tl"></div><div class="lux-bracket tr"></div>
+      <div class="lux-bracket bl"></div><div class="lux-bracket br"></div>
+      <div class="lux-rings">
+        <div class="lux-ring lux-ring-o"></div>
+        <div class="lux-ring lux-ring-m"></div>
+        <div class="lux-ring lux-ring-i"></div>
+        <div style="position:relative;z-index:2;text-align:center;">
+          <div class="lux-val" id="lux-live">—</div>
+          <div class="lux-unit">LUX</div>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:20%;left:0;right:0;text-align:center;font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.25);letter-spacing:.09em;">AIM AT PRIMARY LIGHT SOURCE</div>
+    </div>
+    <div style="background:var(--white);border-radius:26px 26px 0 0;padding:16px 22px calc(var(--safe-bottom)+20px);display:flex;flex-direction:column;gap:13px;">
+      <div style="width:34px;height:4px;border-radius:2px;background:var(--g200);margin:0 auto 4px;"></div>
+      <div class="rsb">
+        <div><p style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.08em;margin-bottom:3px;">LIVE READING</p><p style="font-family:var(--serif);font-size:19px;color:var(--g950);" id="lux-level-lbl">Medium indirect</p><p style="font-size:13px;font-weight:700;color:var(--accent);" id="lux-num-lbl">~3,200 lux</p></div>
+        <div style="background:var(--brand-lt);border-radius:10px;padding:8px 11px;"><p style="font-family:var(--mono);font-size:8px;color:var(--g600);margin-bottom:2px;">OPTIMAL FOR</p><p style="font-size:11px;font-weight:600;color:var(--brand);" id="lux-plant-lbl">Monstera ✓</p></div>
+      </div>
+      <div class="lux-meta-row">
+        <div class="lux-meta"><div class="lux-ml">HUMIDITY</div><div class="lux-mv">62%</div></div>
+        <div class="lux-meta"><div class="lux-ml">TEMP</div><div class="lux-mv">23°C</div></div>
+        <div class="lux-meta"><div class="lux-ml">CONFIDENCE</div><div class="lux-mv">HIGH</div></div>
+      </div>
+      <div class="btn-primary" onclick="confirmLux()">Confirm — use this reading</div>
+      <div class="btn-ghost" style="height:46px;" onclick="closeLux()">Set manually instead</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     S-12  ALERT TRIAGE
+════════════════════════════ -->
+<div class="screen" id="s-alert" style="background:var(--white);">
+  <div style="padding:calc(var(--safe-top)+4px) 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div class="btn-back" onclick="go('s-home')">←</div>
+    <span style="font-size:16px;font-weight:600;">Alert</span>
+    <span style="font-size:14px;font-weight:600;color:var(--brand);cursor:pointer;">History</span>
+  </div>
+  <div style="background:var(--error-lt);border-bottom:1px solid rgba(217,45,32,.15);padding:16px 24px 18px;flex-shrink:0;margin-top:10px;">
+    <div class="row g8" style="margin-bottom:10px;"><div class="d dr" style="width:10px;height:10px;"></div><span style="font-family:var(--mono);font-size:10px;color:var(--error);letter-spacing:.07em;font-weight:500;">CRITICAL CARE ALERT</span></div>
+    <h2 style="font-family:var(--serif);font-size:24px;line-height:1.25;color:var(--g950);margin-bottom:8px;">Fiddle-leaf Fig needs immediate attention</h2>
+    <p style="font-size:13px;color:var(--error);">Soil moisture: 12% · 5 days overdue · Risk: plant loss</p>
+  </div>
+  <div class="row g12" style="padding:14px 24px;background:var(--white);border-bottom:1px solid var(--g200);flex-shrink:0;">
+    <div style="width:46px;height:46px;border-radius:50%;background:var(--brand-lt);border:3px solid rgba(217,45,32,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">🍃</div>
+    <div class="col g2 f1"><span style="font-size:14px;font-weight:500;">Fiddle-leaf Fig</span><span style="font-size:12px;color:var(--g600);">Ficus lyrata · Living room · South window</span></div>
+  </div>
+  <div class="s-scroll">
+    <div class="px col g12" style="padding-top:16px;padding-bottom:28px;">
+      <p class="ey">RECOMMENDED ACTIONS</p>
+      <div class="actc"><div class="arn">1</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Water immediately with 300ml</span><span style="font-family:var(--mono);font-size:9px;color:var(--error);letter-spacing:.04em;font-weight:500;">Urgent</span></div></div>
+      <div class="actc"><div class="arn">2</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Check drainage — likely blocked</span><span style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.04em;font-weight:500;">Today</span></div></div>
+      <div class="actc"><div class="arn">3</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Move away from direct sun</span><span style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.04em;font-weight:500;">This week</span></div></div>
+      <div class="col g12" style="padding-top:4px;">
+        <div class="btn-primary" onclick="go('s-home')">Act now — water plant</div>
+        <div class="btn-ghost" onclick="go('s-home')">Snooze 1h</div>
+        <div style="text-align:center;padding-top:6px;"><span style="font-size:13px;color:var(--g400);cursor:pointer;" onclick="go('s-home')">Dismiss alert</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     COMING SOON OVERLAY (shared)
+════════════════════════════ -->
+<div class="coming-soon" id="cs-overlay" style="display:none;" onclick="hideComingSoon()">
+  <div class="cs-icon" id="cs-icon">🌿</div>
+  <h2 class="cs-title" id="cs-title">Coming soon</h2>
+  <p class="cs-sub" id="cs-sub">This section is still growing</p>
+  <div class="btn-primary" style="width:auto;padding:0 32px;" onclick="hideComingSoon()">Go back</div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════
+   SCREEN ROUTER
+═══════════════════════════════════════════ */
+let current = 's-splash';
+let botReady = false;
+let luxTimer = null;
+
+function go(id) {
+  const from = document.getElementById(current);
+  const to = document.getElementById(id);
+  if (!to || id === current) return;
+  from.classList.add('exit-left');
+  to.classList.add('active');
+  setTimeout(() => { from.classList.remove('active','exit-left'); }, 340);
+  current = id;
+  if (id === 's-botanist' && !botReady) initBot();
+}
+
+/* ── Auto-advance splash ── */
+setTimeout(() => go('s-ob1'), 1800);
+
+/* ═══════════════════════════════════════════
+   MASTER FLOW INTERACTIONS
+═══════════════════════════════════════════ */
+function toggleChip(el, groupId) {
+  document.querySelectorAll('#'+groupId+' .sc-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+function selectSpecies(el, name) {
+  document.querySelectorAll('#species-chips .sc-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('species-field').value = name;
+  if (document.getElementById('preview-name')) document.getElementById('preview-name').textContent = name;
+  botSpecies = name;
+  setTimeout(() => go('s-w2'), 300);
+}
+function showPlantSheet() {
+  document.getElementById('plant-sheet-overlay').classList.add('open');
+}
+function hidePlantSheet() {
+  document.getElementById('plant-sheet-overlay').classList.remove('open');
+}
+function setCamMode(el) {
+  document.querySelectorAll('#cam-modes .cam-mode-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+function switchTask(tab) {
+  ['todo','care','history'].forEach(t => document.getElementById('tsw-'+t).classList.remove('on'));
+  document.getElementById('tsw-'+tab).classList.add('on');
+}
+function showComingSoon(returnTo, label) {
+  const icons = {Explore:'🗺️','My Garden':'🌱',Profile:'👤'};
+  document.getElementById('cs-icon').textContent = icons[label]||'🌿';
+  document.getElementById('cs-title').textContent = label;
+  document.getElementById('cs-sub').textContent = 'This section is still growing 🌱';
+  const overlay = document.getElementById('cs-overlay');
+  overlay.style.display = 'flex';
+  overlay._return = returnTo;
+}
+function hideComingSoon() {
+  document.getElementById('cs-overlay').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════════
+   BOTANIST STATE MACHINE
+═══════════════════════════════════════════ */
+let botTurn = 'T1';
+let botSpecies = 'Monstera deliciosa';
+const botState = { species:null, room:null, light:null, lux:null, src:null };
+
+const TURNS = {
+  T1: {
+    node:1,
+    msg: () => `<p>Hi! I'm Sprout 🌿 Let's set up your new plant.</p><p style="margin-top:7px;">What plant have you got? Type the name or tap 📷 to identify it.</p>
+      <div class="bot-text-wrap">
+        <input class="bot-text-input" id="sp-inp" placeholder="e.g. Monstera deliciosa" autocomplete="off" onkeydown="if(event.key==='Enter'){submitSpecies();}"/>
+        <button class="bot-send" onclick="submitSpecies()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>`,
+    submit(val) {
+      botState.species = val.trim();
+      const inp = document.getElementById('sp-inp');
+      if(inp){inp.disabled=true;inp.style.opacity='.5';if(inp.nextSibling)inp.nextSibling.style.display='none';}
+      userMsg(val.trim());
+      typing(() => {
+        botMsg(`<p>Beautiful — <strong>${esc(botState.species)}</strong> 🌿 Found a match in the database.</p><span class="ai-tag">AI identified · ${Math.min(88+Math.floor(botState.species.length*.4),98)}% confidence</span>`);
+        advBot('T2');
+      }, 900);
+    }
+  },
+  T2: {
+    node:2,
+    msg: () => `<p>Where does your <strong>${esc(botState.species||'plant')}</strong> live?</p>
+      <div class="bot-chips" id="room-c">
+        ${['Living room','Bedroom','Kitchen','Balcony','Office'].map(r=>`<div class="bot-chip" onclick="pickRoom('${r}',this)">${r}</div>`).join('')}
+      </div>`,
+    submit(room) {
+      botState.room = room;
+      userMsg(room);
+      typing(() => advBot('T3'), 600);
+    }
+  },
+  T3: {
+    node:3,
+    msg: () => `<p>Got it — <strong>${esc(botState.room)}</strong>. How much natural light does your plant get?</p><p style="margin-top:5px;font-size:12px;color:var(--g600);">Estimate below, or measure precisely 📡</p>
+      <div class="bot-chips" id="light-c">
+        ${['Low · shade','Medium indirect','Bright direct'].map(l=>`<div class="bot-chip" onclick="pickLight('${l}',this)">${l}</div>`).join('')}
+      </div>
+      <div class="lux-cta" onclick="openLux()" id="lux-cta">
+        <div class="lux-icon">☀</div>
+        <div class="col g1 f1"><span style="font-size:12px;font-weight:600;color:var(--brand-700);">Measure lux with camera</span><span style="font-family:var(--mono);font-size:10px;color:var(--g600);">Launch SproutLux →</span></div>
+      </div>`,
+    submit(level, src) {
+      botState.light = level; botState.src = src;
+      userMsg(src==='lux'?`📡 SproutLux: ${level}`:level);
+      if(src==='lux'){
+        typing(()=>{ botMsg(luxCard()); typing(()=>{ botMsg(doneMsg()); advBot('DONE'); },700); },500);
+      } else {
+        typing(()=>{ botMsg(doneMsg()); advBot('DONE'); },700);
+      }
+    }
+  }
+};
+
+function luxCard() {
+  const pct = Math.min(Math.max(Math.round((botState.lux/10000)*100),10),95);
+  return `<div class="lux-card">
+    <div class="row g9"><div class="lux-icon" style="width:24px;height:24px;border-radius:7px;">☀</div><div><div style="font-size:13px;font-weight:600;">${(botState.lux||3240).toLocaleString()} lux · ${esc(botState.light)}</div><div style="font-size:11px;color:var(--g600);margin-top:1px;">Measured by SproutLux</div></div></div>
+    <div class="lux-prog-track"><div class="lux-prog-fill" style="width:${pct}%;"></div></div>
+    <div class="lux-meta-row"><div class="lux-meta"><div class="lux-ml">HUMIDITY</div><div class="lux-mv">62%</div></div><div class="lux-meta"><div class="lux-ml">CONFIDENCE</div><div class="lux-mv">HIGH</div></div></div>
+    <div class="chip chip-g" style="font-size:9px;padding:3px 9px;width:fit-content;">✓ Optimal for ${esc(botState.species||'your plant')}</div>
+  </div>`;
+}
+function doneMsg() {
+  const map={'Low · shade':'great for shade-tolerant plants','Medium indirect':'exactly what your plant loves','Bright direct':'perfect for sun-loving varieties'};
+  return `<p><strong>${esc(botState.light)}</strong> — ${map[botState.light]||'noted'} ✓</p>
+    <p style="margin-top:7px;font-size:13px;color:var(--g600);">Light profile captured. I'll use this to calibrate your watering schedule.</p>
+    <div style="margin-top:10px;display:flex;gap:7px;flex-wrap:wrap;">
+      <span class="chip chip-g" style="font-size:9px;">Species ✓</span>
+      <span class="chip chip-g" style="font-size:9px;">Room ✓</span>
+      <span class="chip chip-g" style="font-size:9px;">Light ✓</span>
+    </div>
+    <div class="btn-primary" style="margin-top:12px;" onclick="go('s-home')">Back to My Garden 🌿</div>`;
+}
+
+function botMsg(html) {
+  const s = document.getElementById('bot-scroll');
+  const r = document.createElement('div');
+  r.className = 'crow bubble-in';
+  r.innerHTML = `<div class="aav">🌿</div><div class="bai">${html}</div>`;
+  s.appendChild(r); scrollBot();
+}
+function userMsg(text) {
+  const s = document.getElementById('bot-scroll');
+  const r = document.createElement('div');
+  r.className = 'crow-me bubble-in';
+  r.innerHTML = `<div class="bme">${esc(text)}</div>`;
+  s.appendChild(r); scrollBot();
+}
+function typing(cb, delay=800) {
+  const s = document.getElementById('bot-scroll');
+  const r = document.createElement('div');
+  r.className = 'crow bubble-in'; r.id = 'typing-row';
+  r.innerHTML = `<div class="aav">🌿</div><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  s.appendChild(r); scrollBot();
+  setTimeout(() => { const t=document.getElementById('typing-row'); if(t)t.remove(); cb(); }, delay);
+}
+function advBot(turn) {
+  botTurn = turn;
+  updateBotStrip();
+  if(turn==='DONE'){
+    const f=document.getElementById('bot-ci');
+    if(f){f.contentEditable='false';f.textContent='Setup complete 🌿';f.style.color='var(--g400)';}
+    return;
+  }
+  const t=TURNS[turn]; if(!t) return;
+  typing(()=>botMsg(t.msg()),500);
+}
+function updateBotStrip() {
+  const map={T1:1,T2:2,T3:3,DONE:4};
+  const active=map[botTurn]||1;
+  [1,2,3,'done'].forEach((n,i)=>{
+    const idx=i+1; const el=document.getElementById('bsn-'+n);
+    const dot=document.getElementById('bsdot-'+n);
+    if(!el)return;
+    el.className='bsn';
+    if(idx<active){el.classList.add('done');if(dot&&n!=='done')dot.textContent='';}
+    else if(idx===active)el.classList.add('active');
+  });
+}
+function submitSpecies(){
+  const inp=document.getElementById('sp-inp'); if(!inp)return;
+  const val=inp.value.trim()||botSpecies;
+  TURNS.T1.submit(val);
+}
+function pickRoom(room,el){
+  document.querySelectorAll('#room-c .bot-chip').forEach(c=>{c.style.pointerEvents='none';});
+  el.classList.add('sel');
+  setTimeout(()=>TURNS.T2.submit(room),200);
+}
+function pickLight(level,el){
+  document.querySelectorAll('#light-c .bot-chip').forEach(c=>{c.style.pointerEvents='none';c.style.opacity='.45';});
+  el.classList.add('sel'); el.style.opacity='1';
+  const cta=document.getElementById('lux-cta'); if(cta){cta.style.opacity='.4';cta.style.pointerEvents='none';}
+  setTimeout(()=>TURNS.T3.submit(level,'chip'),200);
+}
+function openLux(){
+  document.querySelectorAll('#light-c .bot-chip').forEach(c=>{c.style.pointerEvents='none';c.style.opacity='.45';});
+  document.getElementById('lux-modal').classList.add('open');
+  startLuxSim();
+}
+function closeLux(){
+  document.getElementById('lux-modal').classList.remove('open');
+  stopLuxSim();
+  document.querySelectorAll('#light-c .bot-chip').forEach(c=>{c.style.pointerEvents='';c.style.opacity='';});
+  const cta=document.getElementById('lux-cta'); if(cta){cta.style.opacity='';cta.style.pointerEvents='';}
+}
+function confirmLux(){
+  const raw=document.getElementById('lux-live').textContent.replace(/,/g,'');
+  botState.lux=parseInt(raw)||3240;
+  botState.light=luxLevel(botState.lux);
+  document.getElementById('lux-modal').classList.remove('open');
+  stopLuxSim();
+  document.querySelectorAll('#light-c .bot-chip').forEach(c=>{c.style.pointerEvents='none';c.style.opacity='.35';});
+  const cta=document.getElementById('lux-cta');if(cta){cta.style.opacity='.35';cta.style.pointerEvents='none';}
+  TURNS.T3.submit(botState.light,'lux');
+}
+function startLuxSim(){
+  let cur=800; const target=3240;
+  const el=document.getElementById('lux-live');
+  const ll=document.getElementById('lux-level-lbl');
+  const ln=document.getElementById('lux-num-lbl');
+  const lp=document.getElementById('lux-plant-lbl');
+  luxTimer=setInterval(()=>{
+    cur=Math.min(cur+Math.floor(Math.random()*120+60),target);
+    if(el)el.textContent=cur.toLocaleString();
+    const lv=luxLevel(cur);
+    if(ll)ll.textContent=lv; if(ln)ln.textContent=`~${cur.toLocaleString()} lux`; if(lp)lp.textContent=`${esc(botState.species||'your plant')} ✓`;
+    if(cur>=target)stopLuxSim();
+  },120);
+}
+function stopLuxSim(){if(luxTimer){clearInterval(luxTimer);luxTimer=null;}}
+function luxLevel(v){return v<1000?'Low · shade':v<5000?'Medium indirect':'Bright direct';}
+function scrollBot(){const s=document.getElementById('bot-scroll');setTimeout(()=>s.scrollTo({top:s.scrollHeight,behavior:'smooth'}),50);}
+function handleBotKey(e){
+  if(e.key!=='Enter')return; e.preventDefault();
+  if(botTurn!=='T1')return;
+  const inp=document.getElementById('sp-inp');
+  if(inp&&!inp.disabled){inp.value=e.target.textContent.trim()||botSpecies;e.target.textContent='';submitSpecies();}
+}
+function handleBotCam(){
+  if(botTurn==='T3')openLux();
+  else if(botTurn==='T1'){const inp=document.getElementById('sp-inp');if(inp&&!inp.disabled){inp.value=botSpecies||'Monstera deliciosa';inp.style.borderColor='var(--brand)';inp.focus();}}
+}
+function initBot(){
+  if(botReady)return; botReady=true;
+  document.getElementById('bot-scroll').innerHTML='';
+  botTurn='T1'; updateBotStrip();
+  setTimeout(()=>botMsg(TURNS.T1.msg()),400);
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body>
+</html>
