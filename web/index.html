@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#080807">
+<title>SproutNow — Design Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   SPROUTNOW UNIFIED PROTOTYPE
+   Merged: sproutnow_master_flow + sproutnow_conversational_botanist_t1t3
+   Deployment target: GitHub Pages
+   ═══════════════════════════════════════════ */
+
+/* ── Tokens ── */
+:root {
+  --brand:#2E6F40; --brand-700:#1B4A29; --brand-lt:#E8F5E9; --brand-xlt:#F1FAF2;
+  --accent:#FF5B02; --accent-lt:#FFF0E8;
+  --error:#D92D20; --error-lt:#FEF2F0;
+  --success:#388E3C;
+  --g50:#FAFAF8; --g100:#F4F3F0; --g200:#E8E6E1; --g300:#D4D1C9;
+  --g400:#A9A59C; --g600:#6B6760; --g700:#504D47; --g800:#3A3731; --g950:#1A1815;
+  --white:#FFFFFF; --cam:#0D1A10; --page:#F5F3EE;
+  --serif:'DM Serif Display',serif; --body:'DM Sans',sans-serif; --mono:'Fira Mono',monospace;
+  --btn-h:56px; --btn-r:24px; --btn-shad:0 9px 10px rgba(0,0,0,.34);
+  --card-r:12px; --chip-r:100px; --in-r:12px;
+  --safe-top: env(safe-area-inset-top, 48px);
+  --safe-bottom: env(safe-area-inset-bottom, 18px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+/* ── Root layout ── */
+body {
+  font-family:var(--body);
+  background:#080807;
+  color:var(--g950);
+  overflow-x:hidden;
+}
+
+/* ══════════════════════════════════
+   NAV — Top navigation between views
+   ══════════════════════════════════ */
+#top-nav {
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(8,8,7,.92);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:0;
+  padding:calc(var(--safe-top) + 8px) 16px 10px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+#top-nav::-webkit-scrollbar{display:none;}
+.nav-tab {
+  display:flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:8px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+  color:rgba(255,255,255,.3);white-space:nowrap;
+  cursor:pointer;transition:all .18s;border:none;background:none;
+  flex-shrink:0;
+}
+.nav-tab:hover{color:rgba(255,255,255,.55);}
+.nav-tab.active {
+  background:rgba(46,111,64,.15);
+  border:1px solid rgba(46,111,64,.3);
+  color:rgba(164,220,180,.9);
+}
+.nav-tab .nav-dot {
+  width:5px;height:5px;border-radius:50%;
+  background:currentColor;opacity:.6;
+}
+
+/* ══════════════════════════════════
+   VIEWS — each section is a "view"
+   ══════════════════════════════════ */
+.view {
+  display:none;
+  padding-top:calc(var(--safe-top) + 56px);
+  min-height:100vh;
+}
+.view.active { display:block; }
+
+/* ── Master flow view keeps its dark canvas shell ── */
+#view-master {
+  background:#080807;
+}
+
+/* ── Botanist view is centred phone chrome ── */
+#view-botanist {
+  background:#0A0A09;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  padding-top:calc(var(--safe-top) + 64px);
+  padding-bottom:80px;
+  padding-left:16px;
+  padding-right:16px;
+}
+#view-botanist.active { display:flex; }
+
+/* ════════════════════════════════════════════════
+   MASTER FLOW STYLES (from sproutnow_master_flow)
+   ════════════════════════════════════════════════ */
+.shell{padding:24px 0 120px;}
+.flow-section{padding:32px 40px 0;}
+@media(max-width:600px){.flow-section{padding:24px 16px 0;}}
+.flow-badge{display:inline-flex;align-items:center;gap:8px;background:#161614;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:5px 12px;margin-bottom:12px;}
+.flow-badge span{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:rgba(255,255,255,.4);}
+.flow-title{font-family:var(--serif);font-size:26px;color:rgba(255,255,255,.85);letter-spacing:-.02em;margin-bottom:6px;}
+.flow-desc{font-family:var(--body);font-size:13px;color:rgba(255,255,255,.3);line-height:1.6;max-width:860px;margin-bottom:28px;}
+.srow{display:flex;gap:18px;overflow-x:auto;padding:0 40px 32px;align-items:flex-start;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent;}
+.srow::-webkit-scrollbar{height:3px;}
+.srow::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:1px;}
+@media(max-width:600px){.srow{padding:0 16px 24px;gap:14px;}}
+.sc{display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
+.sc-id{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.08em;}
+.sc-name{font-family:var(--body);font-size:11px;font-weight:500;color:rgba(255,255,255,.4);}
+.sc-edge{font-family:var(--mono);font-size:8px;color:rgba(255,91,2,.5);letter-spacing:.05em;}
+.ph{width:360px;height:780px;border-radius:38px;overflow:hidden;display:flex;flex-direction:column;background:var(--page);border:1px solid rgba(255,255,255,.06);position:relative;flex-shrink:0;}
+.ph.dk{background:var(--cam);}
+.ph.wh{background:var(--white);}
+.ph.cr{background:#F5F3EE;}
+.stb{display:flex;justify-content:space-between;align-items:center;padding:48px 22px 0;flex-shrink:0;}
+.stb-time{font-size:15px;font-weight:600;letter-spacing:-.02em;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 22px 4px;flex-shrink:0;}
+.nb{font-size:14px;font-weight:600;color:var(--brand);}
+.nt{font-size:16px;font-weight:600;color:var(--g950);}
+.na{font-size:14px;font-weight:600;color:var(--brand);}
+.scrl{flex:1;overflow-y:auto;overflow-x:hidden;}
+.scrl::-webkit-scrollbar{display:none;}
+.tabs{display:flex;align-items:stretch;background:var(--white);border-top:1px solid var(--g200);flex-shrink:0;padding-bottom:18px;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:8px 4px 0;cursor:pointer;}
+.tab svg,.tab-ai svg{display:block;}
+.tab .tl{font-family:var(--body);font-size:10px;font-weight:500;color:var(--g400);}
+.tab.on .tl{color:var(--brand);}
+.tab.on svg{color:var(--brand);}
+.tab svg{color:var(--g300);}
+.td{width:4px;height:4px;border-radius:50%;background:var(--brand);margin-top:1px;}
+.tab-ai{flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:4px 4px 0;cursor:pointer;}
+.tai-b{width:42px;height:42px;border-radius:13px;background:var(--g950);box-shadow:0 4px 12px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;margin-top:-14px;flex-shrink:0;}
+.tai-l{font-family:var(--body);font-size:10px;font-weight:600;color:var(--g950);}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:var(--btn-h);background:var(--g950);color:#fff;border:2px solid #282828;border-radius:var(--btn-r);font-family:var(--body);font-size:14px;font-weight:600;box-shadow:var(--btn-shad);flex-shrink:0;cursor:pointer;}
+.btng{display:flex;align-items:center;justify-content:center;width:100%;height:var(--btn-h);background:transparent;color:var(--g600);border:2px solid var(--g400);border-radius:var(--btn-r);font-family:var(--body);font-size:14px;font-weight:600;flex-shrink:0;cursor:pointer;}
+.btnbr{display:flex;align-items:center;justify-content:center;width:100%;height:44px;background:var(--brand);color:#fff;border:none;border-radius:var(--btn-r);font-family:var(--body);font-size:14px;font-weight:600;box-shadow:0 6px 20px rgba(46,111,64,.4);flex-shrink:0;cursor:pointer;}
+.btnsm{flex:1;height:42px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--g300);border-radius:var(--btn-r);font-family:var(--body);font-size:13px;font-weight:500;color:var(--g600);background:transparent;cursor:pointer;}
+.btnsm.on{background:var(--g950);color:#fff;border-color:#282828;box-shadow:0 4px 8px rgba(0,0,0,.2);}
+.btnlnk{background:none;border:none;color:var(--brand);font-size:13px;font-weight:500;font-family:var(--body);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--chip-r);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;}
+.cg{background:var(--brand-lt);color:var(--brand);}
+.co{background:var(--accent-lt);color:var(--accent);}
+.cr{background:var(--error-lt);color:var(--error);}
+.cdk{background:var(--g950);color:#fff;}
+.cgy{background:var(--g100);color:var(--g600);}
+.sc-chip{height:38px;padding:0 14px;border-radius:16px;border:1px solid var(--g300);background:transparent;font-family:var(--body);font-size:13px;font-weight:500;color:var(--g600);display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;cursor:pointer;}
+.sc-chip.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+.chat-chip{padding:6px 14px;border-radius:100px;border:1px solid var(--g300);color:var(--g600);font-family:var(--body);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
+.chat-chip.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+.iw{display:flex;flex-direction:column;gap:6px;}
+.il{font-size:13px;font-weight:500;color:var(--g950);}
+.inp{height:48px;width:100%;border:1px solid var(--g300);border-radius:var(--in-r);padding:0 14px;font-family:var(--body);font-size:14px;color:var(--g950);background:var(--white);outline:none;}
+.inp::placeholder{color:var(--g400);}
+.inp.err{border-color:var(--error);}
+.ierr{font-size:12px;color:var(--error);margin-top:2px;}
+.dots{display:flex;gap:6px;justify-content:center;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g200);}
+.dot.on{width:20px;border-radius:3px;background:var(--brand);}
+.card{background:var(--white);border:1px solid var(--g200);border-radius:var(--card-r);padding:14px 16px;}
+.dcard{background:var(--white);border:1px solid var(--g300);border-radius:var(--card-r);padding:16px;}
+.upsell{background:var(--brand-xlt);border:1px solid rgba(46,111,64,.15);border-radius:16px;padding:18px;position:relative;overflow:hidden;}
+.upsell::before{content:'';position:absolute;right:-16px;top:-16px;width:100px;height:100px;border-radius:50%;background:rgba(46,111,64,.07);}
+.tc{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--g200);border-radius:var(--card-r);padding:14px;}
+.timg{width:46px;height:46px;border-radius:10px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.tchk{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--g300);flex-shrink:0;margin-left:auto;}
+.mbar{background:var(--white);border:1px solid var(--g200);border-radius:var(--card-r);padding:14px;display:flex;flex-direction:column;gap:10px;}
+.mtrack{height:6px;background:var(--g200);border-radius:3px;position:relative;overflow:hidden;}
+.mfill{height:100%;border-radius:3px;position:absolute;left:0;top:0;}
+.hring{position:relative;width:110px;height:110px;}
+.hring svg{position:absolute;inset:0;}
+.hrv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.sheet{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-radius:28px 28px 0 0;box-shadow:0 -8px 32px rgba(0,0,0,.12);padding:14px 22px 22px;display:flex;flex-direction:column;gap:13px;z-index:10;}
+.shdl{width:36px;height:4px;border-radius:2px;background:var(--g200);margin:0 auto 3px;}
+.aprow{display:flex;gap:8px;overflow-x:auto;padding:10px 22px 0;flex-wrap:nowrap;scrollbar-width:none;}
+.aprow::-webkit-scrollbar{display:none;}
+.ap{display:flex;align-items:center;gap:7px;background:var(--white);border:1px solid var(--g200);border-radius:var(--chip-r);padding:7px 13px;font-family:var(--body);font-size:13px;font-weight:500;flex-shrink:0;}
+.ap.w{background:var(--error-lt);border-color:rgba(217,45,32,.2);}
+.ap.t{background:var(--brand-lt);border-color:rgba(46,111,64,.2);}
+.ap.a{background:var(--accent-lt);border-color:rgba(255,91,2,.2);color:var(--accent);}
+.phc{min-width:175px;background:var(--white);border:1px solid var(--g200);border-radius:16px;overflow:hidden;flex-shrink:0;}
+.phci{height:100px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;}
+.phcb{padding:10px 12px 12px;display:flex;flex-direction:column;gap:5px;}
+.mt{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:var(--g600);background:var(--g100);padding:3px 7px;border-radius:6px;}
+.mt.w{color:var(--error);background:var(--error-lt);}
+.mt.b{color:var(--brand);background:var(--brand-lt);}
+.srch{background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:9px;}
+.tsw{display:flex;background:var(--g100);border-radius:100px;padding:4px;}
+.tswi{flex:1;text-align:center;padding:7px 10px;border-radius:100px;font-family:var(--body);font-size:13px;font-weight:500;color:var(--g400);cursor:pointer;white-space:nowrap;}
+.tswi.on{background:var(--g950);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.ey{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;color:var(--brand);}
+.dv{height:1px;background:var(--g200);}
+.px{padding-left:22px;padding-right:22px;}
+.pt4{padding-top:4px;}.pt8{padding-top:8px;}.pt10{padding-top:10px;}.pt12{padding-top:12px;}.pt14{padding-top:14px;}.pt16{padding-top:16px;}.pt20{padding-top:20px;}
+.pb3{padding-bottom:3px;}.pb4{padding-bottom:4px;}.pb8{padding-bottom:8px;}.pb12{padding-bottom:12px;}.pb16{padding-bottom:16px;}.pb20{padding-bottom:20px;}.pb24{padding-bottom:24px;}
+.g4{gap:4px;}.g6{gap:6px;}.g7{gap:7px;}.g8{gap:8px;}.g9{gap:9px;}.g10{gap:10px;}.g12{gap:12px;}.g14{gap:14px;}.g16{gap:16px;}
+.f1{flex:1;min-width:0;}.row{display:flex;align-items:center;}.rsb{display:flex;align-items:center;justify-content:space-between;}.col{display:flex;flex-direction:column;}
+.hscrl{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;}
+.hscrl::-webkit-scrollbar{display:none;}
+.d{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dg{background:var(--brand);}.do{background:var(--accent);}.dr{background:var(--error);}.dm{background:var(--g300);}
+.tl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tli{border-radius:12px;padding:11px 10px;display:flex;flex-direction:column;gap:4px;}
+.snap{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--g100);font-size:13px;}
+.snap:last-child{border-bottom:none;}
+.fab{display:flex;align-items:center;gap:8px;padding:0 20px 0 16px;height:54px;background:var(--g950);color:#fff;border:2px solid #282828;border-radius:100px;font-family:var(--body);font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.38);white-space:nowrap;}
+.bai{background:var(--g50);border:1px solid var(--g200);border-radius:18px 18px 18px 4px;padding:12px 15px;max-width:84%;}
+.bme{background:var(--g950);border-radius:18px 18px 4px 18px;padding:12px 15px;max-width:72%;color:#fff;}
+.crow{display:flex;gap:9px;align-items:flex-end;padding:5px 18px;}
+.crowme{display:flex;justify-content:flex-end;padding:5px 18px;}
+.aav{width:30px;height:30px;border-radius:50%;background:var(--g950);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ci{padding:10px 16px 26px;background:var(--white);border-top:1px solid var(--g100);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.avp{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;overflow:hidden;background:rgba(0,0,0,.15);}
+.msw{display:flex;background:rgba(255,255,255,.07);border-radius:100px;padding:4px;gap:2px;}
+.mb{flex:1;text-align:center;padding:7px 12px;border-radius:100px;font-family:var(--body);font-size:11px;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;white-space:nowrap;}
+.mb.on{background:rgba(255,255,255,.1);color:#fff;}
+.spark{height:28px;border-radius:4px;background:linear-gradient(90deg,var(--brand-lt) 0%,var(--brand) 60%,var(--accent-lt) 100%);opacity:.4;}
+.diagc{background:var(--g50);border:1px solid var(--g200);border-radius:var(--card-r);padding:12px 14px;}
+.cta-stack{display:flex;flex-direction:column;gap:14px;}
+.actc{display:flex;align-items:flex-start;gap:12px;background:var(--g50);border:1px solid var(--g200);border-radius:var(--card-r);padding:12px 14px;}
+.arn{width:22px;height:22px;border-radius:50%;background:var(--brand-lt);color:var(--brand);font-family:var(--mono);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.boc{background:var(--white);border:1px solid var(--g200);border-radius:var(--card-r);padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+.bav{width:46px;height:46px;border-radius:50%;background:var(--brand-lt);border:2px solid rgba(46,111,64,.3);flex-shrink:0;}
+/* Deploy plan */
+.dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;padding:0 40px 40px;}
+@media(max-width:600px){.dg{padding:0 16px 40px;grid-template-columns:1fr;}}
+.dc{background:#111110;border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden;}
+.dch{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);}
+.dcn{width:28px;height:28px;border-radius:8px;background:rgba(46,111,64,.15);border:1px solid rgba(46,111,64,.3);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:rgba(164,220,180,.8);flex-shrink:0;}
+.dcb{padding:12px 16px;display:flex;flex-direction:column;gap:10px;}
+.di{display:flex;gap:10px;padding:10px;background:rgba(255,255,255,.02);border-radius:8px;}
+.dtitle{font-size:12px;font-weight:500;color:rgba(255,255,255,.7);margin-bottom:4px;}
+.ddesc{font-size:11px;color:rgba(255,255,255,.3);line-height:1.55;margin-bottom:6px;}
+.dtag{display:inline-flex;padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:8px;letter-spacing:.04em;}
+.tp{background:rgba(139,92,246,.15);color:rgba(167,139,250,.8);}
+.tg{background:rgba(46,111,64,.15);color:rgba(134,197,128,.8);}
+.ty{background:rgba(255,171,0,.1);color:rgba(255,191,71,.8);}
+.to{background:rgba(255,91,2,.12);color:rgba(255,138,76,.8);}
+.tb{background:rgba(59,130,246,.12);color:rgba(147,197,253,.8);}
+.g2{gap:2px;}.g3{gap:3px;}.g5{gap:5px;}
+
+/* ═══════════════════════════════════════════
+   BOTANIST STATE MACHINE STYLES
+   ═══════════════════════════════════════════ */
+.bot-state-strip {
+  display:flex;gap:0;margin-bottom:24px;
+  background:#111110;border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;overflow:hidden;width:100%;max-width:420px;
+}
+.state-node {
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 8px;border-right:1px solid rgba(255,255,255,.05);
+  transition:background .2s;
+}
+.state-node:last-child{border-right:none;}
+.state-node.active{background:rgba(46,111,64,.12);}
+.state-node.done{background:rgba(46,111,64,.06);}
+.state-dot {
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);transition:all .3s;
+}
+.state-node.active .state-dot{background:var(--brand);border-color:var(--brand);color:#fff;}
+.state-node.done .state-dot{background:rgba(46,111,64,.4);border-color:var(--brand);color:var(--brand);}
+.state-label{font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.05em;text-align:center;line-height:1.3;}
+.state-node.active .state-label{color:rgba(255,255,255,.6);}
+.state-node.done .state-label{color:rgba(46,111,64,.7);}
+/* Phone chrome for botanist */
+.b-phone-wrap{width:100%;max-width:420px;display:flex;flex-direction:column;}
+.b-phone{
+  width:100%;height:780px;border-radius:40px;overflow:hidden;
+  display:flex;flex-direction:column;background:var(--white);
+  border:1px solid rgba(255,255,255,.07);position:relative;
+}
+@media(max-width:440px){
+  .b-phone{border-radius:0;height:calc(100vh - 160px);border:none;}
+  .b-phone-wrap{max-width:100%;}
+}
+.chat-nav{display:flex;align-items:center;justify-content:space-between;padding:52px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--g100);}
+.chat-nav-close{width:34px;height:34px;border-radius:50%;background:var(--g50);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--g600);cursor:pointer;transition:background .15s;}
+.chat-nav-close:hover{background:var(--g100);}
+.chat-nav-badge{font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.08em;}
+.chat-nav-spacer{width:34px;}
+.chat-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 0 8px;display:flex;flex-direction:column;gap:0;}
+.chat-scroll::-webkit-scrollbar{display:none;}
+.crow-me{display:flex;justify-content:flex-end;padding:4px 18px;}
+/* Override .bai for botanist to match its border-radius */
+#view-botanist .bai{border-radius:18px 18px 18px 4px;padding:11px 14px;max-width:84%;font-size:13px;color:var(--g950);line-height:1.55;}
+#view-botanist .bme{padding:11px 14px;max-width:72%;font-size:13px;line-height:1.55;}
+#view-botanist .crow{padding:4px 18px;}
+#view-botanist .aav{align-self:flex-end;}
+/* Typing indicator */
+.typing-indicator{display:flex;align-items:center;gap:4px;padding:10px 14px;background:var(--g50);border:1px solid var(--g200);border-radius:18px 18px 18px 4px;}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--g400);animation:typingPulse 1.2s infinite ease-in-out;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes typingPulse{0%,80%,100%{transform:scale(.7);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+/* Chat chips inside bubbles */
+.bot-chat-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
+.bot-chat-chip{padding:6px 13px;border-radius:100px;border:1px solid var(--g300);background:transparent;font-family:var(--body);font-size:12px;font-weight:500;color:var(--g600);cursor:pointer;white-space:nowrap;transition:all .15s ease;flex-shrink:0;}
+.bot-chat-chip:hover{border-color:var(--brand);color:var(--brand);}
+.bot-chat-chip.selected{background:var(--brand);border-color:var(--brand);color:#fff;pointer-events:none;}
+/* Bubble text input */
+.bubble-input-wrap{margin-top:9px;display:flex;gap:8px;align-items:center;}
+.bubble-input{flex:1;height:40px;border:1px solid var(--g300);border-radius:10px;padding:0 12px;font-family:var(--body);font-size:13px;color:var(--g950);background:var(--white);outline:none;transition:border-color .15s;}
+.bubble-input:focus{border-color:var(--brand);}
+.bubble-input::placeholder{color:var(--g400);}
+.bubble-submit{width:36px;height:36px;border-radius:50%;background:var(--g950);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:opacity .15s;}
+.bubble-submit:hover{opacity:.8;}
+/* AI confidence tag */
+.ai-tag{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-family:var(--mono);font-size:10px;color:var(--brand);background:var(--brand-lt);border:1px solid rgba(46,111,64,.2);border-radius:6px;padding:3px 9px;}
+/* SproutLux CTA */
+.lux-cta{margin-top:9px;background:var(--brand-xlt);border:1px solid rgba(46,111,64,.2);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:border-color .15s,background .15s;}
+.lux-cta:hover{border-color:rgba(46,111,64,.4);background:var(--brand-lt);}
+.lux-icon{width:24px;height:24px;border-radius:7px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;}
+.lux-cta-text{display:flex;flex-direction:column;gap:1px;}
+.lux-cta-title{font-size:11px;font-weight:600;color:var(--brand-700);}
+.lux-cta-sub{font-family:var(--mono);font-size:9px;color:var(--g600);}
+/* SproutLux modal */
+.lux-modal{position:absolute;inset:0;background:var(--cam);border-radius:40px;display:flex;flex-direction:column;z-index:100;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.lux-modal.open{opacity:1;pointer-events:all;}
+@media(max-width:440px){.lux-modal{border-radius:0;}}
+.lux-camera{flex:1;position:relative;display:flex;align-items:center;justify-content:center;}
+.lux-rings{position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;}
+.lux-ring-outer,.lux-ring-mid,.lux-ring-inner{position:absolute;border-radius:50%;}
+.lux-ring-outer{width:180px;height:180px;border:1px solid rgba(164,198,57,.2);background:rgba(164,198,57,.03);}
+.lux-ring-mid{width:145px;height:145px;border:1px solid rgba(164,198,57,.35);animation:ringPulse 2.5s ease-in-out infinite;}
+.lux-ring-inner{width:108px;height:108px;border:1.5px solid rgba(164,198,57,.65);background:rgba(164,198,57,.06);}
+@keyframes ringPulse{0%,100%{border-color:rgba(164,198,57,.35);}50%{border-color:rgba(164,198,57,.65);}}
+.lux-readout{position:relative;z-index:2;text-align:center;}
+.lux-val-big{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--accent);line-height:1.1;}
+.lux-val-unit{font-family:var(--mono);font-size:9px;color:rgba(164,198,57,.7);letter-spacing:.1em;margin-top:2px;}
+.lux-bracket{position:absolute;width:20px;height:20px;}
+.lux-bracket.tl{top:10%;left:8%;border-top:2px solid rgba(164,198,57,.6);border-left:2px solid rgba(164,198,57,.6);}
+.lux-bracket.tr{top:10%;right:8%;border-top:2px solid rgba(164,198,57,.6);border-right:2px solid rgba(164,198,57,.6);}
+.lux-bracket.bl{bottom:10%;left:8%;border-bottom:2px solid rgba(164,198,57,.6);border-left:2px solid rgba(164,198,57,.6);}
+.lux-bracket.br{bottom:10%;right:8%;border-bottom:2px solid rgba(164,198,57,.6);border-right:2px solid rgba(164,198,57,.6);}
+.lux-guide-label{position:absolute;bottom:calc(42% + 20px);left:0;right:0;text-align:center;font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.09em;}
+.lux-sheet{background:var(--white);border-radius:26px 26px 0 0;padding:16px 22px 24px;display:flex;flex-direction:column;gap:13px;flex-shrink:0;box-shadow:0 -8px 28px rgba(0,0,0,.2);}
+.lux-drag-handle{width:34px;height:4px;border-radius:2px;background:var(--g200);margin:0 auto 4px;}
+/* Lux result card (mid-weight) */
+.lux-result-card{margin-top:9px;background:var(--white);border:1px solid var(--g200);border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:8px;}
+.lux-result-headline{display:flex;align-items:center;gap:8px;}
+.lux-sun-icon{width:22px;height:22px;border-radius:6px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.lux-result-val{font-size:13px;font-weight:600;color:var(--g950);}
+.lux-result-label{font-size:12px;color:var(--g600);}
+.lux-progress-track{height:5px;background:var(--g200);border-radius:3px;position:relative;overflow:hidden;}
+.lux-progress-fill{height:100%;border-radius:3px;background:var(--brand);position:absolute;left:0;top:0;transition:width .5s ease;}
+.lux-meta-row{display:flex;gap:8px;}
+.lux-meta-chip{flex:1;background:var(--brand-xlt);border:1px solid rgba(46,111,64,.12);border-radius:8px;padding:7px 8px;}
+.lux-meta-label{font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--brand);margin-bottom:2px;}
+.lux-meta-val{font-size:11px;font-weight:600;color:var(--g950);}
+.lux-match{display:inline-flex;align-items:center;gap:5px;background:var(--brand-lt);border:1px solid rgba(46,111,64,.2);border-radius:6px;padding:3px 9px;font-family:var(--mono);font-size:9px;color:var(--brand);width:fit-content;}
+/* Input bar */
+.b-ci{padding:10px 16px 28px;background:var(--white);border-top:1px solid var(--g100);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.b-ci-field{flex:1;background:var(--g50);border:1px solid var(--g200);border-radius:100px;padding:10px 14px;font-family:var(--body);font-size:13px;color:var(--g400);outline:none;cursor:text;}
+.b-ci-field:focus{color:var(--g950);border-color:var(--g300);}
+.b-ci-mic,.b-ci-cam{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;transition:opacity .15s;}
+.b-ci-mic:hover,.b-ci-cam:hover{opacity:.75;}
+.b-ci-mic{background:var(--brand-lt);}
+.b-ci-cam{background:var(--g950);box-shadow:0 4px 10px rgba(0,0,0,.25);}
+/* Bubble animate */
+@keyframes bubbleIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.bubble-animate{animation:bubbleIn .22s ease forwards;}
+/* Debug panel */
+.debug-panel{margin-top:20px;background:#111110;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px;width:100%;max-width:420px;}
+.debug-title{font-family:var(--mono);font-size:9px;color:rgba(255,91,2,.6);letter-spacing:.08em;margin-bottom:10px;}
+.debug-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-family:var(--mono);font-size:10px;}
+.debug-row:last-child{border-bottom:none;}
+.debug-key{color:rgba(255,255,255,.3);}
+.debug-val{color:rgba(255,255,255,.7);}
+.debug-val.filled{color:#7DD49A;}
+.debug-val.pending{color:rgba(255,255,255,.2);}
+/* Lux meta chip (used in lux-sheet too) */
+.lux-meta-chip-sm{background:rgba(255,255,255,.07);border-radius:8px;padding:7px 10px;}
+.lux-meta-chip-sm .lux-meta-label{color:rgba(255,255,255,.4);}
+.lux-meta-chip-sm .lux-meta-val{color:rgba(255,255,255,.85);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     TOP NAVIGATION
+     ═══════════════════════════════════════════ -->
+<nav id="top-nav" role="navigation" aria-label="Prototype sections">
+  <button class="nav-tab active" data-view="view-master" onclick="switchView('view-master',this)">
+    <span class="nav-dot"></span>MASTER FLOW
+  </button>
+  <button class="nav-tab" data-view="view-botanist" onclick="switchView('view-botanist',this)">
+    <span class="nav-dot"></span>SPROUT AI · T1–T3
+  </button>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════
+     VIEW 1 — MASTER FLOW
+     Source: sproutnow_master_flow.html (all screens)
+     ═══════════════════════════════════════════ -->
+<div id="view-master" class="view active">
+<div class="shell">
+
+<!-- CLUSTER 01 HEADER -->
+<div class="flow-section">
+  <div class="flow-badge"><span>CLUSTER 01 · S-01 → S-06</span></div>
+  <h2 class="flow-title">Onboarding & Identity</h2>
+  <p class="flow-desc">First-launch sequence, authentication, and the wizard-style plant onboarding flow. Progressive disclosure reduces perceived complexity across 6 screens.</p>
+</div>
+<div class="srow">
+
+<!-- S-01 SPLASH -->
+<div class="sc">
+  <div class="sc-id">S-01</div><div class="sc-name">Splash</div>
+  <div class="ph dk" style="align-items:center;justify-content:center;gap:14px;">
+    <div style="width:72px;height:72px;border-radius:22px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 10px 32px rgba(46,111,64,.5);">🌿</div>
+    <div style="text-align:center;">
+      <h1 style="font-family:var(--serif);font-size:36px;color:#fff;letter-spacing:-.03em;line-height:1;">SproutNow</h1>
+      <p style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;margin-top:6px;">PLANT INTELLIGENCE</p>
+    </div>
+    <div style="position:absolute;bottom:60px;left:0;right:0;display:flex;justify-content:center;">
+      <div class="dots"><div class="dot on"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S-02 ONBOARDING A -->
+<div class="sc">
+  <div class="sc-id">S-02a</div><div class="sc-name">Onboarding · Value 1</div>
+  <div class="ph cr">
+    <div class="stb"><span class="stb-time" style="color:var(--g950);">9:41</span><div style="display:flex;gap:5px;align-items:center;"><span style="font-size:11px;">●●●</span></div></div>
+    <div class="scrl">
+      <div style="padding:48px 28px 0;display:flex;flex-direction:column;gap:18px;">
+        <div style="width:100%;height:280px;background:var(--brand-lt);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:80px;">🌱</div>
+        <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <h2 style="font-family:var(--serif);font-size:30px;line-height:1.1;letter-spacing:-.02em;">Know exactly when to water</h2>
+          <p style="font-size:14px;color:var(--g600);line-height:1.5;">AI-powered moisture decay curves predict your plant's needs before it shows stress.</p>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 22px 40px;display:flex;flex-direction:column;gap:13px;">
+      <div class="btn">Next</div>
+      <div style="text-align:center;"><span class="btnlnk">Skip intro</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S-02b ONBOARDING B -->
+<div class="sc">
+  <div class="sc-id">S-02b</div><div class="sc-name">Onboarding · Value 2</div>
+  <div class="ph cr">
+    <div class="stb"><span class="stb-time" style="color:var(--g950);">9:41</span></div>
+    <div class="scrl">
+      <div style="padding:48px 28px 0;display:flex;flex-direction:column;gap:18px;">
+        <div style="width:100%;height:280px;background:var(--accent-lt);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:80px;">📡</div>
+        <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <h2 style="font-family:var(--serif);font-size:30px;line-height:1.1;letter-spacing:-.02em;">Measure light with your camera</h2>
+          <p style="font-size:14px;color:var(--g600);line-height:1.5;">SproutLux uses your phone camera to calculate ambient lux — no sensors needed.</p>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 22px 40px;display:flex;flex-direction:column;gap:13px;">
+      <div class="btn">Next</div>
+      <div style="text-align:center;"><span class="btnlnk">Skip intro</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S-03 AUTH -->
+<div class="sc">
+  <div class="sc-id">S-03</div><div class="sc-name">Auth · Sign Up</div>
+  <div class="ph wh">
+    <div class="scrl">
+      <div style="padding:72px 28px 0;display:flex;flex-direction:column;gap:6px;">
+        <span style="font-size:28px;">🌿</span>
+        <h2 style="font-family:var(--serif);font-size:30px;line-height:1.1;letter-spacing:-.02em;margin-top:6px;">Create your<br>garden account</h2>
+        <p style="font-size:14px;color:var(--g600);margin-top:4px;">Join 240,000 plant parents</p>
+      </div>
+      <div style="padding:28px 28px 0;display:flex;flex-direction:column;gap:16px;">
+        <div class="iw"><span class="il">Name</span><input class="inp" placeholder="Alex Bloom" /></div>
+        <div class="iw"><span class="il">Email</span><input class="inp" type="email" placeholder="alex@example.com" /></div>
+        <div class="iw"><span class="il">Password</span><input class="inp" type="password" placeholder="Min. 8 characters" /></div>
+      </div>
+    </div>
+    <div style="padding:20px 22px 40px;display:flex;flex-direction:column;gap:13px;">
+      <div class="btn">Create account</div>
+      <div class="btng">Continue with Google</div>
+      <div style="text-align:center;"><span style="font-size:13px;color:var(--g600);">Already have an account? </span><span class="btnlnk">Sign in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S-04 WIZARD: SPECIES -->
+<div class="sc">
+  <div class="sc-id">S-04</div><div class="sc-name">Wizard · Identify plant</div>
+  <div class="ph wh">
+    <div class="nav"><span class="nb">Cancel</span><span class="nt">Add plant</span><span class="na">Next</span></div>
+    <div style="padding:4px 22px 8px;"><div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+    <div class="scrl">
+      <div class="px pt14" style="display:flex;flex-direction:column;gap:14px;">
+        <p class="ey">STEP 1 OF 4</p>
+        <h2 style="font-family:var(--serif);font-size:26px;line-height:1.2;letter-spacing:-.02em;">What plant is this?</h2>
+        <div class="iw"><input class="inp" placeholder="Search species…" /><span style="font-size:11px;color:var(--g400);">or</span></div>
+        <div style="border:1.5px dashed var(--g300);border-radius:14px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
+          <span style="font-size:28px;">📷</span>
+          <span style="font-size:13px;font-weight:500;">Take a photo to identify</span>
+          <span style="font-size:11px;color:var(--g600);">Powered by Plant.id</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <p style="font-size:12px;color:var(--g600);">Popular plants</p>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;">
+            <div class="sc-chip on">🌿 Monstera</div><div class="sc-chip">🌵 Cactus</div><div class="sc-chip">🌱 Pothos</div><div class="sc-chip">🍀 Fern</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S-05 WIZARD: PHYSICALS -->
+<div class="sc">
+  <div class="sc-id">S-05</div><div class="sc-name">Wizard · Physicals</div>
+  <div class="ph wh">
+    <div class="nav"><span class="nb">Back</span><span class="nt">Add plant</span><span class="na">Next</span></div>
+    <div style="padding:4px 22px 8px;"><div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div></div>
+    <div class="scrl">
+      <div class="px pt14 col g14 pb20">
+        <p class="ey">STEP 2 OF 4</p>
+        <h2 style="font-family:var(--serif);font-size:26px;line-height:1.2;letter-spacing:-.02em;">Pot & soil details</h2>
+        <div class="iw"><span class="il">Pot material</span><div style="display:flex;flex-wrap:wrap;gap:7px;"><div class="sc-chip on">Terracotta</div><div class="sc-chip">Ceramic</div><div class="sc-chip">Plastic</div><div class="sc-chip">LECA</div></div></div>
+        <div class="iw"><span class="il">Drainage</span><div style="display:flex;gap:7px;"><div class="btnsm on">Yes</div><div class="btnsm">No</div></div></div>
+        <div class="iw"><span class="il">Soil medium</span><div style="display:flex;flex-wrap:wrap;gap:7px;"><div class="sc-chip on">Peat-perlite</div><div class="sc-chip">Coco coir</div><div class="sc-chip">LECA</div></div></div>
+        <div class="iw"><span class="il">Pot size (cm)</span><input class="inp" placeholder="e.g. 18" /></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S-06 WIZARD: SCHEDULE PREVIEW -->
+<div class="sc">
+  <div class="sc-id">S-06</div><div class="sc-name">Wizard · Schedule Preview</div>
+  <div class="ph wh">
+    <div class="nav"><span class="nb">Back</span><span class="nt">Add plant</span><span class="na" style="color:var(--g400);">Done</span></div>
+    <div style="padding:4px 22px 8px;"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div></div>
+    <div class="scrl">
+      <div class="px pt14 col g12 pb20">
+        <p class="ey">STEP 4 OF 4 · PREVIEW</p>
+        <h2 style="font-family:var(--serif);font-size:26px;line-height:1.2;letter-spacing:-.02em;">Your care schedule</h2>
+        <div class="dcard col g12">
+          <div class="row g10">
+            <div style="width:48px;height:48px;border-radius:13px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🌿</div>
+            <div class="col g2 f1"><span style="font-family:var(--serif);font-size:18px;line-height:1.1;">Monstera deliciosa</span><span style="font-size:12px;color:var(--g600);">Living room · Medium indirect</span></div>
+          </div>
+          <div class="dv"></div>
+          <div class="row g10" style="flex-wrap:wrap;">
+            <div class="tli f1" style="background:var(--brand-lt);"><span class="ey" style="font-size:8px;">WATER</span><span style="font-size:14px;font-weight:700;color:var(--brand);">Every 8d</span></div>
+            <div class="tli f1" style="background:var(--accent-lt);"><span style="font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--accent);">FERTILIZE</span><span style="font-size:14px;font-weight:700;color:var(--accent);">Monthly</span></div>
+            <div class="tli f1" style="background:var(--g100);"><span style="font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--g400);">REPOT</span><span style="font-size:13px;font-weight:600;color:var(--g600);">Sep 26</span></div>
+          </div>
+          <div class="mbar"><div class="rsb"><span style="font-family:var(--mono);font-size:9px;color:var(--g600);letter-spacing:.06em;">LIGHT (LUX)</span><span class="chip cg" style="font-size:8px;padding:2px 7px;">optimal</span></div><div class="mtrack"><div class="mfill" style="width:72%;background:var(--brand);"></div></div></div>
+        </div>
+        <div style="background:var(--brand-xlt);border:1px solid rgba(46,111,64,.15);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:9px;">
+          <span style="font-size:16px;">⚠️</span>
+          <p style="font-size:12px;color:var(--g700);line-height:1.4;"><strong>Toxic to cats.</strong> Keep out of reach. Alert added to plant profile.</p>
+        </div>
+      </div>
+    </div>
+    <div style="padding:0 22px 40px;display:flex;flex-direction:column;gap:14px;">
+      <div class="btn">Add to My Garden</div>
+      <div class="btng">Edit details</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /srow Cluster 01 -->
+
+<!-- CLUSTER 02 HEADER -->
+<div class="flow-section">
+  <div class="flow-badge"><span>CLUSTER 02 · S-07 → S-13</span></div>
+  <h2 class="flow-title">Core App Flow</h2>
+  <p class="flow-desc">5-tab navigation. Plant detail opens as bottom sheet from Home and My Garden. S-09 Telemetry is accessible from plant detail. SproutAI (Tab 3) houses Diagnose/Identify/Plant Care. S-12 Alert Triage is interrupt-driven (push notification). Edge cases shown inline with orange/red badges.</p>
+</div>
+<div class="srow">
+
+<!-- S-07 HOME DASHBOARD -->
+<div class="sc">
+  <div class="sc-id">S-07</div><div class="sc-name">Home · Default</div>
+  <div class="ph cr">
+    <div style="padding:48px 22px 0;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;">
+      <div class="col g3"><p style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.1em;">GOOD MORNING</p><h1 style="font-family:var(--serif);font-size:32px;line-height:1.1;letter-spacing:-.03em;">Alex 👋</h1></div>
+      <div style="display:flex;align-items:center;gap:5px;background:var(--white);border:1px solid var(--g200);border-radius:100px;padding:5px 11px;font-size:12px;font-weight:500;color:var(--g700);margin-bottom:3px;">☀️ 23°C</div>
+    </div>
+    <div class="scrl">
+      <div class="px pt12"><div class="srch"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="var(--g400)" stroke-width="1.5"/><path d="M10 10l3 3" stroke="var(--g400)" stroke-width="1.5" stroke-linecap="round"/></svg><span style="flex:1;font-size:12px;color:var(--g400);">Search Plant</span><div style="width:28px;height:28px;background:var(--brand-lt);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;">🔲</div></div></div>
+      <div class="aprow">
+        <div class="ap w" style="flex-shrink:0;">⚠️ High temperatures today</div>
+        <div class="ap t" style="flex-shrink:0;"><span style="background:var(--brand);color:#fff;border-radius:50%;width:17px;height:17px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">3</span> Pending tasks</div>
+        <div class="ap a" style="flex-shrink:0;">💧 1 plant overdue</div>
+        <div class="ap" style="flex-shrink:0;">🌡️ Low humidity</div>
+      </div>
+      <div class="px pt12"><div class="upsell"><div class="row g7" style="margin-bottom:7px;"><span style="font-size:15px;">🌿</span><span class="ey" style="letter-spacing:.06em;">BECOME A SMART SPROUTY</span></div><p style="font-size:12px;color:var(--g600);line-height:1.5;margin-bottom:11px;">Unlock IoT analytics, personalised care schedules, and botanist access.</p><div class="btnbr" style="height:40px;font-size:13px;">Subscribe to Unlock</div></div></div>
+      <div class="px rsb pt14 pb8"><span style="font-size:15px;font-weight:600;">My Plants</span><span style="font-size:13px;font-weight:600;color:var(--brand);">View all</span></div>
+      <div class="hscrl" style="padding:0 22px 10px;">
+        <div class="phc"><div class="phci">🌿<div style="position:absolute;top:7px;right:7px;"><span class="chip cg" style="font-size:8px;padding:2px 7px;">89%</span></div></div><div class="phcb"><span style="font-size:13px;font-weight:500;">Peperomia</span><div class="row g4" style="flex-wrap:wrap;"><span class="mt b">0.6m</span><span class="mt w">Poisonous</span></div><div class="row g4"><span class="mt">in 4 days</span></div></div></div>
+        <div class="phc" style="border-color:rgba(217,45,32,.3);"><div class="phci" style="background:var(--error-lt);">🍃</div><div class="phcb"><span style="font-size:13px;font-weight:500;">Fiddle Fig</span><div class="row g4"><span class="mt w">OVERDUE 3d</span></div><div class="row g4"><span class="mt w">Soil: 12%</span></div></div></div>
+        <div class="phc"><div class="phci">🌵</div><div class="phcb"><span style="font-size:13px;font-weight:500;">Lil Cactus</span><div class="row g4"><span class="mt">Jul 1</span></div></div></div>
+      </div>
+      <div class="px pt4 pb8"><div class="tsw"><div class="tswi on">To do</div><div class="tswi">Care info</div><div class="tswi">History</div></div></div>
+      <div class="px col g7 pb20">
+        <div class="rsb pb3"><span style="font-size:13px;font-weight:600;">Office (2)</span><span style="font-size:12px;font-weight:600;color:var(--brand);">View all</span></div>
+        <div class="tc"><div class="timg">🌿</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Water Monstera</span><span style="font-size:12px;color:var(--error);">Overdue · 2 days</span></div><div class="tchk"></div></div>
+        <div class="tc"><div class="timg">🌱</div><div class="col g2 f1"><span style="font-size:13px;font-weight:500;">Fertilize Peace Lily</span><span style="font-size:12px;color:var(--brand);">Due today</span></div><div class="tchk"></div></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab on"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M3 8l7-5 7 5v8a1 1 0 01-1 1H4a1 1 0 01-1-1V8z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg><span class="tl">Home</span><div class="td"></div></div>
+      <div class="tab"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="tl">Explore</span></div>
+      <div class="tab-ai"><div class="tai-b"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M10 3a3 3 0 013 3v4a3 3 0 01-6 0V6a3 3 0 013-3z" stroke="#fff" stroke-width="1.5"/><path d="M5 9v1a5 5 0 0010 0V9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="tai-l">SproutAI</span></div>
+      <div class="tab"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="tl">My Garden</span></div>
+      <div class="tab"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="tl">Profile</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S-08 PLANT DETAIL BOTTOM SHEET -->
+<div class="sc">
+  <div class="sc-id">S-08</div><div class="sc-name">Plant Detail · Bottom Sheet</div>
+  <div class="ph cr" style="position:relative;">
+    <div style="flex:1;background:rgba(0,0,0,.28);"></div>
+    <div class="sheet" style="height:86%;">
+      <div class="shdl"></div>
+      <div class="row g10">
+        <div style="width:52px;height:52px;border-radius:14px;background:var(--brand-lt);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🌿</div>
+        <div class="col g2 f1"><span style="font-family:var(--serif);font-size:20px;line-height:1.1;">Monstera</span><span style="font-size:12px;color:var(--g600);">Monstera deliciosa · Living room</span></div>
+        <span class="chip co" style="align-self:flex-start;font-size:9px;padding:3px 9px;">⚠ Toxic to cats</span>
+      </div>
+      <div class="row g10" style="justify-content:center;">
+        <div class="hring">
+          <svg viewBox="0 0 110 110" width="110" height="110"><circle cx="55" cy="55" r="46" fill="none" stroke="var(--g200)" stroke-width="6"/><circle cx="55" cy="55" r="46" fill="none" stroke="var(--brand)" stroke-width="6" stroke-dasharray="289" stroke-dashoffset="32" stroke-linecap="round" transform="rotate(-90 55 55)"/></svg>
+          <div class="hrv"><span style="font-size:22px;font-weight:700;color:var(--brand);">89</span><span style="font-family:var(--mono);font-size:8px;color:var(--g600);letter-spacing:.09em;">HEALTH</span></div>
+        </div>
+        <div class="col g7 f1">
+          <div class="row g5"><div class="d dg"></div><span style="font-size:12px;">Water in <strong>4 days</strong></span></div>
+          <div class="row g5"><div class="d do"></div><span style="font-size:12px;">Fertilize <strong>Jul 10</strong></span></div>
+          <div class="row g5"><div class="d dm"></div><span style="font-size:12px;">Repot <strong>Sep 2026</strong></span></div>
+        </div>
+      </div>
+      <div class="dv"></div>
+      <div class="tl">
+        <div class="tli" style="background:var(--brand-lt);"><span style="font-family:var(--mono);font-size:8px;color:var(--brand);">WATER</span><span style="font-size:13px;font-weight:600;">Jun 8</span></div>
+        <div class="tli" style="background:var(--accent-lt);"><span style="font-family:var(--mono);font-size:8px;color:var(--accent);">FERTILIZE</span><span style="font-size:13px;font-weight:600;">Jul 10</span></div>
+        <div class="tli" style="background:var(--g100);"><span style="font-family:var(--mono);font-size:8px;color:var(--g400);">REPOT</span><span style="font-size:12px;font-weight:600;color:var(--g600);">Sep 2026</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div class="snap"><span style="color:var(--g600);">Light</span><div class="row g5"><span>3,240 lux</span><span class="chip cg" style="font-size:8px;padding:2px 6px;">optimal</span></div></div>
+        <div class="snap"><span style="color:var(--g600);">Humidity</span><div class="row g5"><span>62%</span><span class="chip cg" style="font-size:8px;padding:2px 6px;">optimal</span></div></div>
+        <div class="snap"><span style="color:var(--g600);">Soil</span><div class="row g5"><span>41%</span><span class="chip co" style="font-size:8px;padding:2px 6px;">low</span></div></div>
+      </div>
+      <div class="row g7">
+        <div class="btnsm on">Water now</div>
+        <div class="btnsm">AI Scan</div>
+        <div class="btnsm">Edit</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S-09 LIVE TELEMETRY -->
+<div class="sc">
+  <div class="sc-id">S-09</div><div class="sc-name">Live Telemetry</div>
+  <div class="ph wh">
+    <div style="padding:48px 22px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="width:34px;height:34px;background:var(--g100);border:1px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--g700);">←</div>
+      <span style="font-size:16px;font-weight:600;color:var(--g950);">Environment</span>
+      <span style="font-size:16px;color:var(--g400);letter-spacing:.08em;">···</span>
+    </div>
+    <div class="scrl">
+      <div class="px pt8 col g4 pb10"><p class="ey">LIVE TELEMETRY</p><h2 style="font-family:var(--serif);font-size:26px;letter-spacing:-.02em;">Micro-climate</h2><p style="font-size:12px;color:var(--g600);">Synced 2 min ago · humidity API active</p></div>
+      <div class="px col g9 pb20">
+        <div class="mbar"><div class="rsb"><span style="font-family:var(--mono);font-size:9px;color:var(--g600);letter-spacing:.06em;">LIGHT (LUX)</span><div class="row g7"><span style="font-size:13px;font-weight:500;">3,240 lux</span><span class="chip cg" style="font-size:8px;padding:2px 7px;">optimal</span></div></div><div class="mtrack"><div class="mfill" style="width:72%;background:var(--brand);"></div></div></div>
+        <div class="mbar"><div class="rsb"><span style="font-family:var(--mono);font-size:9px;color:var(--g600);letter-spacing:.06em;">HUMIDITY</span><div class="row g7"><span style="font-size:13px;font-weight:500;">62%</span><span class="chip cg" style="font-size:8px;padding:2px 7px;">optimal</span></div></div><div class="mtrack"><div class="mfill" style="width:62%;background:var(--brand);"></div></div></div>
+        <div class="mbar"><div class="rsb"><span style="font-family:var(--mono);font-size:9px;color:var(--g600);letter-spacing:.06em;">TEMPERATURE</span><div class="row g7"><span style="font-size:13px;font-weight:500;">23°C</span><span class="chip cg" style="font-size:8px;padding:2px 7px;">optimal</span></div></div><div class="mtrack"><div class="mfill" style="width:58%;background:var(--brand);"></div></div></div>
+        <div class="mbar" style="border-color:rgba(255,91,2,.3);"><div class="rsb"><span style="font-family:var(--mono);font-size:9px;color:var(--g600);letter-spacing:.06em;">SOIL MOISTURE</span><div class="row g7"><span style="font-size:13px;font-weight:500;">41%</span><span class="chip co" style="font-size:8px;padding:2px 7px;">warning</span></div></div><div class="mtrack"><div class="mfill" style="width:41%;background:var(--accent);"></div></div></div>
+        <p class="ey" style="padding-top:3px;">MOISTURE DECAY MODEL</p>
+        <div class="card col g7"><div class="rsb"><span style="font-size:13px;font-weight:500;">Greg moisture decay</span><span class="ey" style="font-size:9px;">ACTIVE</span></div><p style="font-size:12px;color:var(--g600);">Next watering: Jun 8 · 4 days · 41% remaining</p><div class="spark"></div></div>
+        <div style="background:var(--brand-xlt);border:1px solid rgba(46,111,64,.2);border-radius:11px;padding:11px 13px;display:flex;align-items:center;gap:9px;"><div style="width:26px;height:26px;background:var(--brand);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;">☀</div><div class="col g2 f1"><span style="font-size:12px;font-weight:600;color:var(--brand);">Re-measure ambient lux</span><span style="font-size:11px;color:var(--g600);">Launch SproutLux bridge →</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S-10 SPROUTAI DIAGNOSE -->
+<div class="sc">
+  <div class="sc-id">S-10</div><div class="sc-name">SproutAI · Diagnose</div>
+  <div class="ph dk">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:5;padding:48px 20px 0;display:flex;align-items:center;justify-content:space-between;"><div style="width:32px;height:32px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;">✕</div><span style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.07em;">SPROUT AI</span><div style="background:rgba(255,255,255,.1);border-radius:100px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.7);">Skip to Plantpal →</div></div>
+    <div class="avp">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(255,91,2,.07) 0%,transparent 70%);"></div>
+      <div style="font-size:80px;opacity:.4;position:relative;z-index:1;transform:rotate(-10deg);">🍃</div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);width:220px;height:240px;border:1.5px solid rgba(255,91,2,.5);border-radius:20px;">
+        <div style="position:absolute;top:-9px;left:-9px;width:18px;height:18px;border-top:2px solid rgba(255,91,2,.9);border-left:2px solid rgba(255,91,2,.9);"></div>
+        <div style="position:absolute;top:-9px;right:-9px;width:18px;height:18px;border-top:2px solid rgba(255,91,2,.9);border-right:2px solid rgba(255,91,2,.9);"></div>
+        <div style="position:absolute;bottom:-9px;left:-9px;width:18px;height:18px;border-bottom:2px solid rgba(255,91,2,.9);border-left:2px solid rgba(255,91,2,.9);"></div>
+        <div style="position:absolute;bottom:-9px;right:-9px;width:18px;height:18px;border-bottom:2px solid rgba(255,91,2,.9);border-right:2px solid rgba(255,91,2,.9);"></div>
+        <div style="position:absolute;top:30%;left:38%;width:11px;height:11px;border-radius:50%;background:#FF4B4B;box-shadow:0 0 8px #FF4B4B;"></div>
+        <div style="position:absolute;top:52%;left:60%;width:8px;height:8px;border-radius:50%;background:#FF4B4B;box-shadow:0 0 6px #FF4B4B;opacity:.8;"></div>
+      </div>
+      <div style="position:absolute;bottom:20px;left:0;right:0;text-align:center;"><span style="font-family:var(--mono);font-size:8px;color:rgba(255,91,2,.65);letter-spacing:.1em;">SCANNING FOR ISSUES — HOLD STILL</span></div>
+    </div>
+    <div style="background:rgba(13,26,16,.95);padding:8px 20px 10px;display:flex;justify-content:center;"><div class="msw"><div class="mb on" style="background:rgba(255,91,2,.15);color:var(--accent);">♡ Diagnose</div><div class="mb">🎯 Identify</div><div class="mb">🌱 Plant care</div></div></div>
+    <div style="background:rgba(10,21,13,.98);padding:9px 20px 26px;display:flex;align-items:center;justify-content:space-around;">
+      <div style="width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.4);">🖼</div>
+      <div style="width:60px;height:60px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;"><div style="width:46px;height:46px;border-radius:50%;background:var(--g950);"></div></div>
+      <div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.4);">⚡</div>
+    </div>
+  </div>
+</div>
+
+<!-- S-11 DIAGNOSIS RESULT -->
+<div class="sc">
+  <div class="sc-id">S-11</div><div class="sc-name">Diagnosis Result</div>
+  <div class="ph wh">
+    <div style="padding:48px 22px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="width:34px;height:34px;background:var(--g100);border:1px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--g700);">←</div>
+      <span style="font-size:16px;font-weight:600;color:var(--g950);">Diagnosis</span>
+      <span style="font-size:14px;font-weight:600;color:var(--brand);">Share</span>
+    </div>
+    <div class="scrl">
+      <div class="px" style="padding-top:16px;padding-bottom:0;display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="chip cg" style="font-size:10px;padding:5px 12px;"><div class="d dg" style="width:6px;height:6px;margin-right:2px;"></div>94% confidence</span>
+          <span class="chip co" style="font-size:10px;padding:5px 12px;">MODERATE</span>
+        </div>
+        <h2 style="font-family:var(--serif);font-size:26px;line-height:1.2;letter-spacing:-.02em;color:var(--g950);">Root Rot<br>(Early Stage)</h2>
+        <p style="font-size:12px;color:var(--g600);line-height:1.4;">Monstera deliciosa · Detected Jun 7, 2026</p>
+      </div>
+      <div style="background:var(--brand-lt);height:152px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;overflow:hidden;margin-top:16px;">
+        <span style="font-size:64px;opacity:.22;">🍃</span>
+        <div style="position:absolute;width:68px;height:48px;background:rgba(217,45,32,.2);border:1.5px solid rgba(217,45,32,.65);border-radius:8px;">
+          <span style="position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:var(--error);white-space:nowrap;">Rot zone</span>
+        </div>
+      </div>
+      <div class="px" style="padding-top:16px;padding-bottom:24px;display:flex;flex-direction:column;gap:12px;">
+        <div class="diagc"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="d dg"></div><span style="font-size:13px;font-weight:600;color:var(--brand);">Cause</span></div><p style="font-size:12px;color:var(--g600);line-height:1.5;">Overwatering + poor drainage. Soil saturation exceeded 85% for 12+ days.</p></div>
+        <div class="diagc"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="d do"></div><span style="font-size:13px;font-weight:600;color:var(--accent);">Symptoms</span></div><p style="font-size:12px;color:var(--g600);line-height:1.5;">Yellowing lower leaves, soft black stem base, musty odour.</p></div>
+        <div class="diagc"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div class="d dg" style="background:var(--success);"></div><span style="font-size:13px;font-weight:600;color:var(--success);">Treatment</span></div><p style="font-size:12px;color:var(--g600);line-height:1.5;">Remove from pot. Trim black roots. Repot in dry peat-perlite. Reduce watering 40%.</p></div>
+        <div class="cta-stack" style="padding-top:8px;">
+          <div class="btn">Apply treatment plan</div>
+          <div class="btng">Book a botanist instead →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S-12 ALERT TRIAGE -->
+<div class="sc">
+  <div class="sc-id">S-12</div><div class="sc-name">Alert Triage</div>
+  <div class="sc-edge" style="color:rgba(217,45,32,.6);">INTERRUPT · PUSH NOTIF</div>
+  <div class="ph wh">
+    <div style="padding:48px 22px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="width:34px;height:34px;background:var(--g100);border:1px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--g700);">←</div>
+      <span style="font-size:16px;font-weight:600;color:var(--g950);">Alert</span>
+      <span style="font-size:14px;font-weight:600;color:var(--brand);">History</span>
+    </div>
+    <div style="background:var(--error-lt);border-bottom:1px solid rgba(217,45,32,.15);padding:16px 24px 20px;flex-shrink:0;margin-top:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><div class="d dr" style="width:10px;height:10px;flex-shrink:0;"></div><span style="font-family:var(--mono);font-size:10px;color:var(--error);letter-spacing:.07em;font-weight:500;">CRITICAL CARE ALERT</span></div>
+      <h2 style="font-family:var(--serif);font-size:24px;line-height:1.25;color:var(--g950);margin-bottom:8px;">Fiddle-leaf Fig needs immediate attention</h2>
+      <p style="font-size:13px;color:var(--error);line-height:1.4;">Soil moisture: 12% · 5 days overdue · Risk: plant loss</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 24px;background:var(--white);border-bottom:1px solid var(--g200);flex-shrink:0;">
+      <div style="width:46px;height:46px;border-radius:50%;background:var(--brand-lt);border:3px solid rgba(217,45,32,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;">🍃</div>
+      <div style="display:flex;flex-direction:column;gap:3px;flex:1;"><span style="font-size:14px;font-weight:500;color:var(--g950);">Fiddle-leaf Fig</span><span style="font-size:12px;color:var(--g600);">Ficus lyrata · Living room · South window</span></div>
+    </div>
+    <div class="scrl">
+      <div style="padding:16px 24px 28px;display:flex;flex-direction:column;gap:12px;">
+        <p class="ey">RECOMMENDED ACTIONS</p>
+        <div class="actc"><div class="arn">1</div><div style="display:flex;flex-direction:column;gap:3px;flex:1;"><span style="font-size:13px;font-weight:500;color:var(--g950);">Water immediately with 300ml</span><span style="font-family:var(--mono);font-size:9px;color:var(--error);letter-spacing:.04em;font-weight:500;">Urgent</span></div></div>
+        <div class="actc"><div class="arn">2</div><div style="display:flex;flex-direction:column;gap:3px;flex:1;"><span style="font-size:13px;font-weight:500;color:var(--g950);">Check drainage — likely blocked</span><span style="font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.04em;font-weight:500;">Today</span></div></div>
+        <div class="actc"><div class="arn">3</div><div style="display:flex;flex-direction:column;gap:3px;flex:1;"><span style="font-size:13px;font-weight:500;color:var(--g950);">Move away from direct sun</span><span style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.04em;font-weight:500;">This week</span></div></div>
+        <div class="cta-stack" style="padding-top:4px;">
+          <div class="btn">Act now — water plant</div>
+          <div class="btng">Snooze 1h</div>
+          <div style="text-align:center;padding:8px 0 0;"><span style="font-size:13px;color:var(--g400);cursor:pointer;">Dismiss alert</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S-13 BOTANIST BOOKING -->
+<div class="sc">
+  <div class="sc-id">S-13</div><div class="sc-name">Phygital Escalation</div>
+  <div class="ph wh">
+    <div style="padding:48px 22px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="width:34px;height:34px;background:var(--g100);border:1px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--g700);">←</div>
+      <span style="font-size:16px;font-weight:600;color:var(--g950);">Find a botanist</span>
+      <span style="font-size:16px;color:var(--g400);letter-spacing:.08em;">···</span>
+    </div>
+    <div class="scrl">
+      <div style="padding:16px 24px 16px;display:flex;flex-direction:column;gap:8px;">
+        <p class="ey">ON-DEMAND CARE</p>
+        <h2 style="font-family:var(--serif);font-size:28px;letter-spacing:-.02em;line-height:1.1;color:var(--g950);">Book a botanist</h2>
+        <p style="font-size:13px;color:var(--g600);line-height:1.4;">Verified specialists · in-home visit within 72h · geo-matched</p>
+      </div>
+      <div style="padding:0 24px 28px;display:flex;flex-direction:column;gap:12px;">
+        <div class="boc"><div style="display:flex;align-items:center;gap:12px;"><div class="bav"></div><div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;"><span style="font-size:14px;font-weight:500;color:var(--g950);">Dr. Priya Nair</span><span style="font-size:12px;color:var(--g600);">Tropical plants · Root diseases</span></div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-family:var(--mono);font-size:10px;color:var(--g400);">1.2 km away</span><span style="font-family:var(--mono);font-size:10px;color:var(--brand);">★ 4.9</span><span class="chip cg" style="font-size:9px;padding:4px 10px;">Available today</span></div></div>
+        <div class="boc"><div style="display:flex;align-items:center;gap:12px;"><div class="bav" style="border-color:rgba(46,111,64,.15);"></div><div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;"><span style="font-size:14px;font-weight:500;color:var(--g950);">James Osei</span><span style="font-size:12px;color:var(--g600);">Ficus &amp; ferns specialist</span></div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-family:var(--mono);font-size:10px;color:var(--g400);">2.8 km away</span><span style="font-family:var(--mono);font-size:10px;color:var(--brand);">★ 4.7</span><span class="chip cg" style="font-size:9px;padding:4px 10px;">Available tomorrow</span></div></div>
+        <div class="boc"><div style="display:flex;align-items:center;gap:12px;"><div class="bav" style="background:var(--g100);border-color:var(--g200);"></div><div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;"><span style="font-size:14px;font-weight:500;color:var(--g950);">Maya Chen</span><span style="font-size:12px;color:var(--g600);">Urban indoor gardens</span></div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-family:var(--mono);font-size:10px;color:var(--g400);">4.1 km away</span><span style="font-family:var(--mono);font-size:10px;color:var(--brand);">★ 4.8</span><span class="chip cgy" style="font-size:9px;padding:4px 10px;">Next: Jun 9</span></div></div>
+        <div class="btn" style="margin-top:4px;">Book Dr. Priya Nair</div>
+        <div class="btng">See all available botanists</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /srow Cluster 02 -->
+
+</div><!-- /shell -->
+</div><!-- /view-master -->
+
+
+<!-- ═══════════════════════════════════════════
+     VIEW 2 — SPROUT AI · CONVERSATIONAL BOTANIST
+     Source: sproutnow_conversational_botanist_t1t3.html
+     Turns 1 (Identification) → 2 (Location) → 3 (Light / SproutLux)
+     ═══════════════════════════════════════════ -->
+<div id="view-botanist" class="view">
+
+  <!-- State progress strip -->
+  <div class="bot-state-strip" id="state-strip">
+    <div class="state-node active" id="snode-1">
+      <div class="state-dot" id="sdot-1">1</div>
+      <div class="state-label">Identify</div>
+    </div>
+    <div class="state-node" id="snode-2">
+      <div class="state-dot" id="sdot-2">2</div>
+      <div class="state-label">Location</div>
+    </div>
+    <div class="state-node" id="snode-3">
+      <div class="state-dot" id="sdot-3">3</div>
+      <div class="state-label">Light</div>
+    </div>
+    <div class="state-node" id="snode-done">
+      <div class="state-dot" id="sdot-done">✓</div>
+      <div class="state-label">Done</div>
+    </div>
+  </div>
+
+  <!-- Phone chrome -->
+  <div class="b-phone-wrap">
+  <div class="b-phone">
+
+    <div class="chat-nav">
+      <div class="chat-nav-close" onclick="resetBotChat()">✕</div>
+      <span class="chat-nav-badge">SPROUT AI · BOTANIST MODE</span>
+      <div class="chat-nav-spacer"></div>
+    </div>
+
+    <div class="chat-scroll" id="bot-chat-scroll"></div>
+
+    <div class="b-ci">
+      <div class="b-ci-field" id="b-ci-field" contenteditable="true"
+        onkeydown="handleBotCiKeydown(event)"></div>
+      <div class="b-ci-mic" title="Voice">🎤</div>
+      <div class="b-ci-cam" title="Camera" onclick="handleBotCameraShortcut()">📷</div>
+    </div>
+
+    <!-- SproutLux modal (absolute inside phone) -->
+    <div class="lux-modal" id="lux-modal">
+      <div class="lux-camera">
+        <div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:52px 22px 0;z-index:5;">
+          <span style="font-size:15px;font-weight:600;color:#fff;">9:41</span>
+          <div style="background:rgba(255,255,255,.1);border-radius:100px;padding:4px 13px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.65);cursor:pointer;" onclick="closeLuxModal()">← Back to chat</div>
+        </div>
+        <div class="lux-bracket tl"></div>
+        <div class="lux-bracket tr"></div>
+        <div class="lux-bracket bl"></div>
+        <div class="lux-bracket br"></div>
+        <div class="lux-rings">
+          <div class="lux-ring-outer"></div>
+          <div class="lux-ring-mid"></div>
+          <div class="lux-ring-inner"></div>
+          <div class="lux-readout">
+            <div class="lux-val-big" id="lux-live-val">—</div>
+            <div class="lux-val-unit">LUX</div>
+          </div>
+        </div>
+        <div class="lux-guide-label">AIM AT YOUR PLANT'S PRIMARY LIGHT SOURCE</div>
+      </div>
+      <div class="lux-sheet">
+        <div class="lux-drag-handle"></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+          <div>
+            <p style="font-family:var(--mono);font-size:9px;color:var(--brand);letter-spacing:.08em;margin-bottom:3px;">LIVE READING</p>
+            <p style="font-family:var(--serif);font-size:18px;color:var(--g950);" id="lux-reading-label">Medium indirect</p>
+            <p style="font-size:13px;font-weight:700;color:var(--accent);" id="lux-reading-val">~3,200 lux confirmed</p>
+          </div>
+          <div style="background:var(--brand-lt);border-radius:10px;padding:7px 10px;flex-shrink:0;">
+            <p style="font-family:var(--mono);font-size:8px;color:var(--g950);margin-bottom:2px;">OPTIMAL FOR</p>
+            <p style="font-size:11px;font-weight:600;color:var(--brand);" id="lux-match-plant">—</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:7px;">
+          <div class="lux-meta-chip"><div class="lux-meta-label">HUMIDITY</div><div class="lux-meta-val">62%</div></div>
+          <div class="lux-meta-chip"><div class="lux-meta-label">TEMP</div><div class="lux-meta-val">23°C</div></div>
+          <div class="lux-meta-chip"><div class="lux-meta-label">CONFIDENCE</div><div class="lux-meta-val">HIGH</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="btn" onclick="confirmLuxReading()">Confirm — use this reading</div>
+          <div class="btng" style="height:46px;" onclick="closeLuxModal()">Set manually instead</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /b-phone -->
+  </div><!-- /b-phone-wrap -->
+
+  <!-- Dev state inspector -->
+  <div class="debug-panel">
+    <div class="debug-title">STATE MACHINE · LIVE SNAPSHOT</div>
+    <div class="debug-row"><span class="debug-key">currentTurn</span><span class="debug-val" id="dbg-turn">T1_IDENTIFICATION</span></div>
+    <div class="debug-row"><span class="debug-key">state.species</span><span class="debug-val pending" id="dbg-species">null</span></div>
+    <div class="debug-row"><span class="debug-key">state.room</span><span class="debug-val pending" id="dbg-room">null</span></div>
+    <div class="debug-row"><span class="debug-key">state.lightLevel</span><span class="debug-val pending" id="dbg-light">null</span></div>
+    <div class="debug-row"><span class="debug-key">state.luxValue</span><span class="debug-val pending" id="dbg-lux">null</span></div>
+    <div class="debug-row"><span class="debug-key">state.lightSource</span><span class="debug-val pending" id="dbg-lightsrc">null</span></div>
+  </div>
+
+</div><!-- /view-botanist -->
+
+
+<script>
+/* ════════════════════════════════════════════
+   VIEW SWITCHER
+   ════════════════════════════════════════════ */
+function switchView(viewId, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+  if (viewId === 'view-botanist' && !botInitialised) initBot();
+}
+
+/* ════════════════════════════════════════════
+   MASTER FLOW interactivity
+   ════════════════════════════════════════════ */
+document.querySelectorAll('.chat-chip,.sc-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    const siblings = this.parentElement.querySelectorAll('.chat-chip,.sc-chip');
+    siblings.forEach(s => s.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+document.querySelectorAll('.tswi').forEach(tab => {
+  tab.addEventListener('click', function() {
+    this.parentElement.querySelectorAll('.tswi').forEach(t => t.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+
+/* ════════════════════════════════════════════
+   CONVERSATIONAL BOTANIST STATE MACHINE
+   ════════════════════════════════════════════ */
+let botInitialised = false;
+let luxAnimFrame = null;
+
+const botState = {
+  species: null, aiConfidence: null,
+  room: null,
+  lightLevel: null, luxValue: null, lightSource: null,
+};
+let currentTurn = 'T1_IDENTIFICATION';
+
+/* ── Turn definitions ── */
+const TURNS = {
+  T1_IDENTIFICATION: {
+    next: 'T2_LOCATION', stateNode: 1,
+    botMessage: () => `
+      <p>Hi! I'm Sprout, your botanical AI. Let's set up your new plant. 🌱</p>
+      <p style="margin-top:6px;">What plant have you got? Type the name below, or tap 📷 to identify it.</p>
+      <div class="bubble-input-wrap">
+        <input class="bubble-input" id="species-input" type="text" placeholder="e.g. Monstera deliciosa" autocomplete="off" onkeydown="if(event.key==='Enter'){submitSpecies();}"/>
+        <button class="bubble-submit" onclick="submitSpecies()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>`,
+    onSubmit: (val) => {
+      if (!val.trim()) return;
+      botState.species = val.trim();
+      botState.aiConfidence = Math.min(88 + Math.floor(Math.min(val.length, 20) * 0.4), 98);
+      const inp = document.getElementById('species-input');
+      if (inp) { inp.disabled = true; inp.style.opacity = '.5'; if (inp.nextElementSibling) inp.nextElementSibling.style.display = 'none'; }
+      appendUserTurn(val.trim());
+      showTyping(() => {
+        appendBotTurn(`
+          <p>Beautiful — <strong>${escH(botState.species)}</strong> 🌿 I found a match.</p>
+          <span class="ai-tag"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v2.5M5 6.5V7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> AI identified · ${botState.aiConfidence}% confidence</span>`);
+        advanceTo('T2_LOCATION');
+      }, 800);
+      syncDebug();
+    }
+  },
+  T2_LOCATION: {
+    next: 'T3_LIGHT', stateNode: 2,
+    botMessage: () => `
+      <p>Where does your <strong>${escH(botState.species||'plant')}</strong> live?</p>
+      <div class="bot-chat-chips" id="room-chips">
+        ${['Living room','Bedroom','Kitchen','Balcony','Office'].map(r=>`<div class="bot-chat-chip" onclick="selectRoom('${r}',this)">${r}</div>`).join('')}
+      </div>`,
+    onSubmit: (room) => {
+      botState.room = room;
+      appendUserTurn(room);
+      showTyping(() => advanceTo('T3_LIGHT'), 600);
+      syncDebug();
+    }
+  },
+  T3_LIGHT: {
+    next: 'T3_COMPLETE', stateNode: 3,
+    botMessage: () => `
+      <p>Got it — <strong>${escH(botState.room)}</strong>. How much natural light does your plant get?</p>
+      <p style="margin-top:5px;font-size:12px;color:var(--g600);">Estimate below, or measure precisely with your camera 📡</p>
+      <div class="bot-chat-chips" id="light-chips" style="margin-top:9px;">
+        ${['Low · shade','Medium indirect','Bright direct'].map(l=>`<div class="bot-chat-chip" onclick="selectLight('${l}',this)">${l}</div>`).join('')}
+      </div>
+      <div class="lux-cta" onclick="openLuxModal()" id="lux-cta-btn">
+        <div class="lux-icon">☀</div>
+        <div class="lux-cta-text">
+          <span class="lux-cta-title">Measure lux with camera</span>
+          <span class="lux-cta-sub">Launch SproutLux bridge →</span>
+        </div>
+      </div>`,
+    onSubmit: (level, source) => {
+      botState.lightLevel = level;
+      botState.lightSource = source;
+      const userMsg = source === 'sproutlux' ? `📡 SproutLux: ${level}` : level;
+      appendUserTurn(userMsg);
+      if (source === 'sproutlux') {
+        showTyping(() => {
+          appendBotTurn(buildLuxCard());
+          showTyping(() => { appendBotTurn(buildDoneMsg()); advanceTo('T3_COMPLETE'); }, 700);
+        }, 500);
+      } else {
+        showTyping(() => { appendBotTurn(buildDoneMsg()); advanceTo('T3_COMPLETE'); }, 700);
+      }
+      syncDebug();
+    }
+  }
+};
+
+function buildLuxCard() {
+  const pct = Math.min(Math.max(Math.round((botState.luxValue/10000)*100), 10), 95);
+  return `
+    <div class="lux-result-card">
+      <div class="lux-result-headline">
+        <div class="lux-sun-icon">☀</div>
+        <div>
+          <div class="lux-result-val">${(botState.luxValue||3240).toLocaleString()} lux · ${escH(botState.lightLevel)}</div>
+          <div class="lux-result-label" style="margin-top:1px;">Measured by SproutLux</div>
+        </div>
+      </div>
+      <div class="lux-progress-track"><div class="lux-progress-fill" style="width:${pct}%;"></div></div>
+      <div class="lux-meta-row">
+        <div class="lux-meta-chip"><div class="lux-meta-label">HUMIDITY</div><div class="lux-meta-val">62%</div></div>
+        <div class="lux-meta-chip"><div class="lux-meta-label">CONFIDENCE</div><div class="lux-meta-val">HIGH</div></div>
+      </div>
+      <div class="lux-match"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Optimal for ${escH(botState.species||'your plant')}</div>
+    </div>`;
+}
+
+function buildDoneMsg() {
+  const map = {'Low · shade':'great for shade-tolerant plants','Medium indirect':'exactly what your plant loves','Bright direct':'great for sun-loving varieties'};
+  return `
+    <p><strong>${escH(botState.lightLevel)}</strong> — ${map[botState.lightLevel]||'noted'} ✓</p>
+    <p style="margin-top:6px;color:var(--g600);font-size:12px;">Light profile captured. I'll use this to calibrate your watering schedule.</p>
+    <div style="margin-top:10px;display:flex;gap:7px;align-items:center;">
+      <span class="chip cg" style="font-size:9px;padding:3px 10px;">Species ✓</span>
+      <span class="chip cg" style="font-size:9px;padding:3px 10px;">Room ✓</span>
+      <span class="chip cg" style="font-size:9px;padding:3px 10px;">Light ✓</span>
+    </div>`;
+}
+
+/* ── DOM injection ── */
+function appendBotTurn(html) {
+  const s = document.getElementById('bot-chat-scroll');
+  const row = document.createElement('div');
+  row.className = 'crow bubble-animate';
+  row.innerHTML = `<div class="aav">🌿</div><div class="bai">${html}</div>`;
+  s.appendChild(row); botScrollBottom();
+}
+function appendUserTurn(text) {
+  const s = document.getElementById('bot-chat-scroll');
+  const row = document.createElement('div');
+  row.className = 'crow-me bubble-animate';
+  row.innerHTML = `<div class="bme">${escH(text)}</div>`;
+  s.appendChild(row); botScrollBottom();
+}
+function showTyping(cb, delay=800) {
+  const s = document.getElementById('bot-chat-scroll');
+  const r = document.createElement('div');
+  r.className='crow bubble-animate'; r.id='typing-ind';
+  r.innerHTML=`<div class="aav">🌿</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  s.appendChild(r); botScrollBottom();
+  setTimeout(() => { const ind=document.getElementById('typing-ind'); if(ind)ind.remove(); cb(); }, delay);
+}
+
+/* ── Turn advancement ── */
+function advanceTo(id) {
+  currentTurn = id;
+  updateStateStrip(); syncDebug();
+  if (id === 'T3_COMPLETE') {
+    const f = document.getElementById('b-ci-field');
+    if (f) { f.contentEditable='false'; f.textContent='Turns 1–3 complete · continuing to Physicals →'; f.style.color='var(--g400)'; }
+    return;
+  }
+  const t = TURNS[id]; if (!t) return;
+  showTyping(() => appendBotTurn(t.botMessage()), 500);
+}
+
+/* ── Selection handlers ── */
+function selectRoom(room, el) {
+  document.querySelectorAll('#room-chips .bot-chat-chip').forEach(c=>{ c.style.pointerEvents='none'; });
+  el.classList.add('selected');
+  setTimeout(() => TURNS.T2_LOCATION.onSubmit(room), 200);
+}
+function selectLight(level, el) {
+  document.querySelectorAll('#light-chips .bot-chat-chip').forEach(c=>{ c.style.pointerEvents='none'; c.style.opacity='.5'; });
+  el.classList.add('selected'); el.style.opacity='1';
+  const cta=document.getElementById('lux-cta-btn'); if(cta){cta.style.opacity='.4';cta.style.pointerEvents='none';}
+  setTimeout(() => TURNS.T3_LIGHT.onSubmit(level,'chip'), 200);
+}
+function submitSpecies() {
+  const inp=document.getElementById('species-input'); if(!inp) return;
+  const val=inp.value.trim(); if(!val){inp.style.borderColor='var(--error)';return;}
+  TURNS.T1_IDENTIFICATION.onSubmit(val);
+}
+
+/* ── SproutLux ── */
+function openLuxModal() {
+  document.querySelectorAll('#light-chips .bot-chat-chip').forEach(c=>{ c.style.pointerEvents='none';c.style.opacity='.4'; });
+  document.getElementById('lux-modal').classList.add('open');
+  startLuxSim();
+}
+function closeLuxModal() {
+  document.getElementById('lux-modal').classList.remove('open');
+  stopLuxSim();
+  document.querySelectorAll('#light-chips .bot-chat-chip').forEach(c=>{ c.style.pointerEvents='';c.style.opacity=''; });
+  const cta=document.getElementById('lux-cta-btn'); if(cta){cta.style.opacity='';cta.style.pointerEvents='';}
+}
+function confirmLuxReading() {
+  const raw=document.getElementById('lux-live-val').textContent.replace(/,/g,'');
+  botState.luxValue=parseInt(raw)||3240;
+  botState.lightLevel=luxToLevel(botState.luxValue);
+  document.getElementById('lux-modal').classList.remove('open');
+  stopLuxSim();
+  document.querySelectorAll('#light-chips .bot-chat-chip').forEach(c=>{ c.setAttribute('disabled','true');c.style.pointerEvents='none';c.style.opacity='.35'; });
+  const cta=document.getElementById('lux-cta-btn'); if(cta){cta.style.opacity='.35';cta.style.pointerEvents='none';}
+  TURNS.T3_LIGHT.onSubmit(botState.lightLevel,'sproutlux');
+}
+function startLuxSim() {
+  let cur=800; const target=3240;
+  const el=document.getElementById('lux-live-val');
+  const rl=document.getElementById('lux-reading-label');
+  const rv=document.getElementById('lux-reading-val');
+  const mp=document.getElementById('lux-match-plant');
+  luxAnimFrame=setInterval(()=>{
+    cur=Math.min(cur+Math.floor(Math.random()*120+60),target);
+    if(el) el.textContent=cur.toLocaleString();
+    const lv=luxToLevel(cur);
+    if(rl)rl.textContent=lv;
+    if(rv)rv.textContent=`~${cur.toLocaleString()} lux confirmed`;
+    if(mp)mp.textContent=`${escH(botState.species||'your plant')} ✓`;
+    if(cur>=target)stopLuxSim();
+  },120);
+}
+function stopLuxSim(){if(luxAnimFrame){clearInterval(luxAnimFrame);luxAnimFrame=null;}}
+function luxToLevel(lux){return lux<1000?'Low · shade':lux<5000?'Medium indirect':'Bright direct';}
+
+/* ── State strip ── */
+function updateStateStrip() {
+  const map={'T1_IDENTIFICATION':1,'T2_LOCATION':2,'T3_LIGHT':3,'T3_COMPLETE':4};
+  const active=map[currentTurn]||1;
+  [1,2,3,'done'].forEach((n,i)=>{
+    const nodeIdx=i+1;
+    const el=document.getElementById(`snode-${n}`);
+    const dot=document.getElementById(`sdot-${n}`);
+    if(!el)return;
+    el.className='state-node';
+    if(nodeIdx<active){el.classList.add('done');if(dot&&n!=='done')dot.textContent='';}
+    else if(nodeIdx===active)el.classList.add('active');
+  });
+}
+
+/* ── Debug ── */
+function syncDebug(){
+  document.getElementById('dbg-turn').textContent=currentTurn;
+  const set=(id,v)=>{const el=document.getElementById(id);if(!el)return;el.textContent=v===null?'null':v;el.className='debug-val '+(v===null?'pending':'filled');};
+  set('dbg-species',botState.species); set('dbg-room',botState.room);
+  set('dbg-light',botState.lightLevel); set('dbg-lux',botState.luxValue); set('dbg-lightsrc',botState.lightSource);
+}
+
+/* ── Utilities ── */
+function botScrollBottom(){ const s=document.getElementById('bot-chat-scroll'); setTimeout(()=>s.scrollTo({top:s.scrollHeight,behavior:'smooth'}),50); }
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function handleBotCiKeydown(e){
+  if(e.key!=='Enter')return; e.preventDefault();
+  if(currentTurn!=='T1_IDENTIFICATION')return;
+  const inp=document.getElementById('species-input');
+  if(inp&&!inp.disabled){inp.value=e.target.textContent.trim();e.target.textContent='';submitSpecies();}
+}
+function handleBotCameraShortcut(){
+  if(currentTurn==='T3_LIGHT')openLuxModal();
+  else if(currentTurn==='T1_IDENTIFICATION'){const inp=document.getElementById('species-input');if(inp&&!inp.disabled){inp.value='Monstera deliciosa';inp.style.borderColor='var(--brand)';inp.focus();}}
+}
+function resetBotChat(){
+  document.getElementById('bot-chat-scroll').innerHTML='';
+  Object.keys(botState).forEach(k=>botState[k]=null);
+  currentTurn='T1_IDENTIFICATION';
+  botInitialised=false;
+  const f=document.getElementById('b-ci-field');
+  if(f){f.contentEditable='true';f.textContent='';f.style.color='';}
+  updateStateStrip(); syncDebug();
+  initBot();
+}
+
+/* ── Bootstrap ── */
+function initBot(){
+  if(botInitialised)return;
+  botInitialised=true;
+  setTimeout(()=>{appendBotTurn(TURNS.T1_IDENTIFICATION.botMessage());updateStateStrip();syncDebug();},400);
+}
+</script>
+</body>
+</html>
